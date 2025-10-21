@@ -12,40 +12,44 @@ public class Deck {
         this.deckPriority = deckPriority;
     }
 
-    public void lockThisDeck(){
-        try {
-            deckLock.lockInterruptibly();
-
-        } catch (InterruptedException e) {
-            // Thrown if other thread have won the Game
-        }
+    public boolean tryLock(){
+        return deckLock.tryLock();
     }
-    public void unlockThisDeck(){
+
+    public void unlock(){
         deckLock.unlock();
     }
 
 
     public void withDrawnCard(Player player){
-
-        try {
-            deckLock.lockInterruptibly();
-            // Check to see if the deck if empty, if it is you release this lock and wait for other thread to fill up 
-            while (cardList.isEmpty()){
-                IsEmptyCondition.await();
-            }
-            player.getPlayerCard().add(cardList.pollFirst());
-
-        } catch (InterruptedException ex) {
-
+        if (CardGame.whoWon != null){
+            return;
         }
+        Card polledCard = cardList.pollFirst();
+        player.getPlayerCard().add(polledCard);
+        System.out.println("Player " + player.playerIndex + " withdraw a " + polledCard + " left deck become " + cardList + "player hand is " + player.getPlayerCard());
     }
 
     public void receiveCard(Card inputCard){
         cardList.addLast(inputCard);
-        IsEmptyCondition.signalAll();
+    }
+
+    public void discarded(Card inputCard){
+        if (CardGame.whoWon != null){
+            return;
+        }
+        cardList.addLast(inputCard);
     }
 
     public int getDeckPriority(){
         return deckPriority;
+    }
+
+    public ArrayDeque<Card> getCardList(){
+        return cardList;
+    }
+
+    public boolean isEmpty(){
+        return (cardList.isEmpty());
     }
 }

@@ -11,5 +11,9 @@ public class Card {
         return value;
     }
 
+    public String toString(){
+        return String.valueOf(value);
+    }
+
     // No setter method required because card value is fixed
 }
