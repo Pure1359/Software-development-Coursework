@@ -38,28 +38,35 @@ public class Player implements Runnable {
                             break;
                         }
                         leftDeck.withDrawnCard(this);
+                        
+                        if (CardGame.whoWon != null){
+                            break;
+                        }
+                        Card inputCard = getDifferCard();
+                        rightDeck.discarded(inputCard);
+                        System.out.println("Player " + playerIndex + " discard a " + inputCard.getValue() + " right deck become " + rightDeck.getCardList() + " player card is " + PlayerCard);
+
                         if (isWon()) {
                             System.out.println("Player Index : " + playerIndex + "Win");
                             CardGame.whoWon = this;
                             CardGame.interruptAllThread();
                             CardGame.checkSum();
                         
-                        } else {
-                            if (CardGame.whoWon != null){
-                                break;
-                            }
-                            Card inputCard = getDifferCard();
-                            rightDeck.discarded(inputCard);
-                            System.out.println("Player " + playerIndex + " discard a " + inputCard.getValue() + " right deck become " + rightDeck.getCardList());
                         }
-
+                        
                         leftDeck.unlock();
                         rightDeck.unlock();
                     }
                 } else {
                     leftDeck.unlock();
                 }
-            } 
+            }
+            // avoid greedy
+            try{
+                Thread.sleep(100L);
+            }  catch (InterruptedException e){
+                Thread.currentThread().interrupt();
+            }
         }
        
     }

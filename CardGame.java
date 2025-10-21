@@ -3,11 +3,13 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 class CardGame {
     public static volatile  Player whoWon = null;
     public static Player[] playerArr = null;
+    public static Deck[] deckArr = null;
     public static Thread[] threadList = null;
     public static void main(String[] args) {
         Scanner myObj = new Scanner(System.in);  // Create a Scanner object
@@ -21,7 +23,7 @@ class CardGame {
 
         playerArr = new Player[n];
         threadList = new Thread[n];
-        Deck[] deckArr = new Deck[n];
+        deckArr = new Deck[n];
           
         for (int i = 0; i < n; i++) {
             playerArr[i] = new Player(i);
@@ -111,8 +113,20 @@ class CardGame {
     }
 
     public static void checkSum(){
+        ArrayList<Card> useless = new ArrayList<Card>();
         for (Player eachPlayer : playerArr){
-            System.out.println(eachPlayer.getPlayerCard());
+            for (Card eachCard : eachPlayer.getPlayerCard()){
+                useless.add(eachCard);
+            }
         }
+
+        for (Deck eachDeck : deckArr){
+            for (Card eachCard : eachDeck.getCardList()){
+                useless.add(eachCard);
+            }
+        }
+        System.out.println(useless.size());
+        System.out.println(useless);
+
     }
 }
