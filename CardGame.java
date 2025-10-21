@@ -1,6 +1,7 @@
 import java.util.Scanner;  // Import the Scanner class
 
 class CardGame {
+  public static Player whoWon = null;
   public static void main(String[] args) {
     Scanner myObj = new Scanner(System.in);  // Create a Scanner object
    
@@ -12,5 +13,7 @@ class CardGame {
     String filename = myObj.nextLine();  // Read user input
 
     myObj.close(); // close scanner object
+
+
   }
 }
