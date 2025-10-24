@@ -12,6 +12,7 @@ class CardGame {
     public static Deck[] deckArr = null;
     public static Thread[] threadList = null;
     public static void main(String[] args) {
+        
         Scanner myObj = new Scanner(System.in);  // Create a Scanner object
        
         System.out.println("Please enter the number of players");
@@ -20,6 +21,7 @@ class CardGame {
 
         System.out.println("Please enter location of pack to load");
         String filename = myObj.nextLine();  // Read user input
+        myObj.close(); // close the scanenr object
 
         playerArr = new Player[n];
         threadList = new Thread[n];
@@ -64,7 +66,7 @@ class CardGame {
                   cardTaken++;
               } else{
                   deckIndex = deckIndex % n;
-                  deckArr[deckIndex].discarded(new Card(Integer.parseInt(read)));
+                  deckArr[deckIndex].receiveCard(new Card(Integer.parseInt(read)));
                   deckIndex++;
               }
             
@@ -81,19 +83,17 @@ class CardGame {
                 try {
                     eachThread.join();
                 } catch (InterruptedException e){
-                    System.out.println("Stop playing");
                 }
             }
 
-            
+            readFile.close();
+
         } catch (FileNotFoundException e) {
             System.out.println("file not found");
         } catch (IOException k){
 
         }
-       
-
-        myObj.close(); // close scanner object
+    
     }
 
     public static void logging(Player[] playerArr){
@@ -106,12 +106,7 @@ class CardGame {
             }
     }
 
-    public static void interruptAllThread(){
-        for (Thread eachThread : threadList){
-            eachThread.interrupt();
-        }
-    }
-
+    
     public static void checkSum(){
         ArrayList<Card> useless = new ArrayList<Card>();
         for (Player eachPlayer : playerArr){

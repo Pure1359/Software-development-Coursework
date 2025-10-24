@@ -1,0 +1,4 @@
+Player 1 original hand is [2, 5, 4, 2] has drawn 0 leftDeck become [2, 2, 5, 5, 2] Player discarded 2 to right deck, right deck become : [0, 0, 2]player hand is [5, 4, 2, 0]
+Player 1 original hand is [5, 4, 2, 0] has drawn 2 leftDeck become [2, 5, 5, 2] Player discarded 5 to right deck, right deck become : [0, 0, 2, 5]player hand is [4, 2, 0, 2]
+Player 1 original hand is [4, 2, 0, 2] has drawn 2 leftDeck become [5, 5, 2, 2] Player discarded 4 to right deck, right deck become : [2, 5, 4]player hand is [2, 0, 2, 2]
+4 has interrupt this player because that player4 won
