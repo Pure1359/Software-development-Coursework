@@ -1,4 +1,5 @@
-Player 0 original hand is [0, 5, 0, 2] has drawn 2 leftDeck become [2, 1, 0] Player discarded 5 to right deck, right deck become : [0, 2, 2, 5, 5]player hand is [0, 0, 2, 2]
-Player 0 original hand is [0, 0, 2, 2] has drawn 2 leftDeck become [1, 0] Player discarded 2 to right deck, right deck become : [0, 2, 2, 5, 5, 2]player hand is [0, 0, 2, 2]
-Player 0 original hand is [0, 0, 2, 2] has drawn 1 leftDeck become [0, 3, 1, 4] Player discarded 2 to right deck, right deck become : [2, 5, 5, 2, 2]player hand is [0, 0, 2, 1]
-4 has interrupt this player because that player4 won
+Player 0 withDrawn a 2 from left deck left deck is now : [4, 4, 0, 2, 0, 0, 0]player hand is : [0, 0, 2, 0, 2] and then discard 2 to the right deck right deck is now [3, 2, 0, 1, 5, 2, 0, 0, 2]player hand is : [0, 0, 0, 2]
+Player 0 withDrawn a 4 from left deck left deck is now : [4, 0, 2, 0, 0, 0, 4]player hand is : [0, 0, 0, 2, 4] and then discard 2 to the right deck right deck is now [0, 1, 5, 2, 0, 0, 2, 2]player hand is : [0, 0, 0, 4]
+Player 0 withDrawn a 4 from left deck left deck is now : [0, 2, 0, 0, 0, 4]player hand is : [0, 0, 0, 4, 4] and then discard 4 to the right deck right deck is now [0, 1, 5, 2, 0, 0, 2, 2, 4]player hand is : [0, 0, 0, 4]
+Player 0 withDrawn a 0 from left deck left deck is now : [2, 0, 0, 0, 4, 5, 1]player hand is : [0, 0, 0, 4, 0] and then discard 4 to the right deck right deck is now [5, 2, 0, 0, 2, 2, 4, 4]player hand is : [0, 0, 0, 0]
+something0 has interrupt this player that player Index : 0 has won the game

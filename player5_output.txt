@@ -1,5 +1,6 @@
-Player 5 original hand is [5, 3, 1, 4] has drawn 1 leftDeck become [1, 0, 1, 0, 3] Player discarded 3 to right deck, right deck become : [1, 0, 3]player hand is [5, 1, 4, 1]
-Player 5 original hand is [5, 1, 4, 1] has drawn 1 leftDeck become [0, 1, 0, 3, 1] Player discarded 1 to right deck, right deck become : [1, 0, 3, 1]player hand is [5, 4, 1, 1]
-Player 5 original hand is [5, 4, 1, 1] has drawn 0 leftDeck become [1, 0, 3, 1, 2] Player discarded 4 to right deck, right deck become : [1, 0, 3, 1, 4]player hand is [5, 1, 1, 0]
-Player 5 original hand is [5, 1, 1, 0] has drawn 1 leftDeck become [0, 3, 1, 2, 0] Player discarded 1 to right deck, right deck become : [0, 3, 1, 4, 1]player hand is [5, 1, 0, 1]
-4 has interrupt this player because that player4 won
+Player 5 withDrawn a 1 from left deck left deck is now : [1, 0, 1, 0]player hand is : [5, 3, 1, 4, 1] and then discard 3 to the right deck right deck is now [2, 1, 0, 3]player hand is : [5, 1, 4, 1]
+Player 5 withDrawn a 1 from left deck left deck is now : [0, 1, 0, 3, 1]player hand is : [5, 1, 4, 1, 1] and then discard 1 to the right deck right deck is now [0, 3, 1]player hand is : [5, 4, 1, 1]
+Player 5 withDrawn a 0 from left deck left deck is now : [1, 0, 3, 1]player hand is : [5, 4, 1, 1, 0] and then discard 4 to the right deck right deck is now [3, 1, 4]player hand is : [5, 1, 1, 0]
+Player 5 withDrawn a 1 from left deck left deck is now : [0, 3, 1]player hand is : [5, 1, 1, 0, 1] and then discard 1 to the right deck right deck is now [3, 1, 4, 1]player hand is : [5, 1, 0, 1]
+Player 5 withDrawn a 0 from left deck left deck is now : [3, 1, 2, 0]player hand is : [5, 1, 0, 1, 0] and then discard 1 to the right deck right deck is now [4, 1, 1]player hand is : [5, 0, 1, 0]
+4 has interrupt this player that player Index : 4 has won the game

@@ -27,22 +27,11 @@ public class Deck {
         }
     }
 
-    public Card withDrawnCard(Player player){
-        if (CardGame.whoWon != null){
-            return null;
-        }
-        Card polledCard = cardList.pollFirst();
-
-        return polledCard;
+    public ArrayDeque<Card> getDeckCardList(){
+        return cardList;
     }
-
     public void receiveCard(Card inputCard){
         cardList.addLast(inputCard);
-    }
-
-    public void discarded(Card inputCard, Player player){
-        cardList.addLast(inputCard);
-        player.getPlayerCard();
     }
 
     public int getDeckPriority(){

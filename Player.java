@@ -2,6 +2,7 @@
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 
 public class Player implements Runnable {
@@ -10,7 +11,7 @@ public class Player implements Runnable {
     private Deck rightDeck;
     private String report;
     private  BufferedWriter writetoFile;
-    ArrayList<Card> PlayerCard = new ArrayList<>();
+    ArrayList<Card> playerCard = new ArrayList<>();
 
     // Constructor and Setter function , nothing special
     public Player(int playerIndex){
@@ -45,51 +46,29 @@ public class Player implements Runnable {
                     } else {
                         //Given that we successfully lock both left and right deck, we can not perform atomic withdrawal and discard to right deck
 
-                        if (CardGame.whoWon == null){
-                            Card justTaken = leftDeck.withDrawnCard(this);
-                            report = "Player " + playerIndex  + " original hand is " + PlayerCard + " has drawn " + justTaken.getValue() + " leftDeck become " + leftDeck.getCardList();
-                            PlayerCard.add(justTaken);
-                            Card inputCard = getDifferCard();
-                            rightDeck.discarded(inputCard, this);
-                            report = report + " Player discarded " + inputCard.getValue() + " to right deck, right deck become : " + rightDeck.getCardList() + "player hand is " + PlayerCard; 
-                            if (CardGame.whoWon == null){
-                                try {
-                                    writetoFile.write(report);
-                                    writetoFile.newLine();
-                                    
-                                } catch (IOException e) {
-                                    System.out.println("Can not write to file");
-                                }
-                                System.out.println(report);
-                            }
-
-                        } else{
+                        if (CardGame.whoWon != null){
                             leftDeck.unlock();
                             rightDeck.unlock();
                             break;
+
+                        } else{
+                            this.withDrawnCard();
+                            this.discardingCard();
                         }
                         
                         if (CardGame.whoWon == null && isWon()) {
                             System.out.println("Player Index : " + playerIndex + " Win");
-                            try {
-                                writetoFile.write("Player" + playerIndex + " won the game");
-                            } catch (IOException e) {
-                            }
-
+                            writeDatatoFile("something");
                             CardGame.whoWon = this;
                             CardGame.checkSum();
                         }
-
                         //Once we finish with withdrawing and discarding, we can now release this lock
-                        
                         leftDeck.unlock();
                         rightDeck.unlock();
                     }
                 } else {
                     leftDeck.unlock();
                 }
-            
-
             if (CardGame.whoWon != null){
                 break;
             }
@@ -105,40 +84,45 @@ public class Player implements Runnable {
                     Thread.currentThread().interrupt();
             }
         }
+        System.out.println("Player Index : " + playerIndex + " thread has stopped");
+        writeDatatoFile(CardGame.whoWon.playerIndex + " has interrupt this player that player Index : " + CardGame.whoWon.playerIndex + " has won the game");
+           
         
-        System.out.println("Exit");
+    }
+    
+    public void withDrawnCard(){
+        ArrayDeque<Card> leftDeckCardList = leftDeck.getCardList();
+        Card topCard = leftDeckCardList.pollFirst();
+        playerCard.add(topCard);
+        writeDatatoFile("Player " + playerIndex + " withDrawn a " + topCard.getValue() + " from left deck left deck is now : " + leftDeckCardList + "player hand is : " + playerCard);
+    }
+
+    public void discardingCard(){
+        ArrayDeque<Card> rightDeckCardList = rightDeck.getCardList();
+        Card differentCard = getDifferCard();
+        rightDeckCardList.addLast(differentCard);
+        writeDatatoFile(" and then discard " + differentCard.getValue() + " to the right deck right deck is now " + rightDeckCardList  + "player hand is : " + playerCard +  "\n");
+    }
+
+    public void writeDatatoFile(String message){
         try {
-            writetoFile.write(CardGame.whoWon.playerIndex + " has interrupt this player because that player" + CardGame.whoWon.playerIndex + " won");
+            writetoFile.write(message);
             writetoFile.flush();
         } catch (IOException e) {
+            System.out.println("Can not write the message to file");
         }
-    }
-    //Return player hand
-    public ArrayList<Card> getPlayerCard(){
-        return this.PlayerCard;
     }
 
     // return and remove a card from player hand , such that card value != prefered denomination
     public Card getDifferCard(){
-        for (Card eachCard : PlayerCard){
+        for (Card eachCard : playerCard){
             if (eachCard.getValue() != playerIndex){
-                PlayerCard.remove(eachCard);
+                playerCard.remove(eachCard);
                 return eachCard;
             }
         }
         // This will not be called, don't worry
         return null;
-    }
-
-    // Check to see if player contain 4 card  with the same number
-    public boolean isWon(){
-        int firstValue = PlayerCard.getFirst().getValue();
-        for (Card eachCard : PlayerCard){
-            if (eachCard.getValue() != firstValue){
-                return false;
-            }
-        }
-        return true;
     }
 
     //Getter function, nothing special
@@ -148,5 +132,21 @@ public class Player implements Runnable {
 
     public Deck getRightDeck(){
         return rightDeck;
+    }
+
+    //Return player hand
+    public ArrayList<Card> getPlayerCard(){
+        return this.playerCard;
+    }
+
+    // Check to see if player contain 4 card  with the same number
+    public boolean isWon(){
+        int firstValue = playerCard.getFirst().getValue();
+        for (Card eachCard : playerCard){
+            if (eachCard.getValue() != firstValue){
+                return false;
+            }
+        }
+        return true;
     }
 }
