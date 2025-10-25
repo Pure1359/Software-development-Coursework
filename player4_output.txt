@@ -1,7 +1,6 @@
-Player 4 withDrawn a 4 from left deck left deck is now : [2, 0, 3]player hand is : [0, 4, 3, 1, 4] and then discard 0 to the right deck right deck is now [1, 1, 0, 1, 0]player hand is : [4, 3, 1, 4]
-Player 4 withDrawn a 2 from left deck left deck is now : [0, 3, 4, 4]player hand is : [4, 3, 1, 4, 2] and then discard 3 to the right deck right deck is now [1, 0, 1, 0, 3]player hand is : [4, 1, 4, 2]
-Player 4 withDrawn a 0 from left deck left deck is now : [3, 4, 4]player hand is : [4, 1, 4, 2, 0] and then discard 1 to the right deck right deck is now [1, 0, 1, 0, 3, 1]player hand is : [4, 4, 2, 0]
-Player 4 withDrawn a 3 from left deck left deck is now : [4, 4, 1, 0]player hand is : [4, 4, 2, 0, 3] and then discard 2 to the right deck right deck is now [0, 3, 1, 2]player hand is : [4, 4, 0, 3]
-Player 4 withDrawn a 4 from left deck left deck is now : [4, 1, 0, 2]player hand is : [4, 4, 0, 3, 4] and then discard 0 to the right deck right deck is now [0, 3, 1, 2, 0]player hand is : [4, 4, 3, 4]
-Player 4 withDrawn a 4 from left deck left deck is now : [1, 0, 2, 5]player hand is : [4, 4, 3, 4, 4] and then discard 3 to the right deck right deck is now [3, 1, 2, 0, 3]player hand is : [4, 4, 4, 4]
-something4 has interrupt this player that player Index : 4 has won the game
+Player 4 withDrawn a 5 from left deck left deck is now : [6, 3, 1, 8]player hand is : [4, 4, 2, 5, 5] and then discard 2 to the right deck right deck is now [7, 6, 8, 2]player hand is : [4, 4, 5, 5]
+Player 4 withDrawn a 6 from left deck left deck is now : [3, 1, 8, 7]player hand is : [4, 4, 5, 5, 6] and then discard 5 to the right deck right deck is now [6, 8, 2, 5]player hand is : [4, 4, 5, 6]
+Player 4 withDrawn a 3 from left deck left deck is now : [1, 8, 7, 6]player hand is : [4, 4, 5, 6, 3] and then discard 5 to the right deck right deck is now [8, 2, 5, 5]player hand is : [4, 4, 6, 3]
+Player 4 withDrawn a 1 from left deck left deck is now : [8, 7, 6, 5]player hand is : [4, 4, 6, 3, 1] and then discard 6 to the right deck right deck is now [2, 5, 5, 6]player hand is : [4, 4, 3, 1]
+Player 4 withDrawn a 8 from left deck left deck is now : [7, 6, 5, 8]player hand is : [4, 4, 3, 1, 8] and then discard 3 to the right deck right deck is now [5, 5, 6, 3]player hand is : [4, 4, 1, 8]
+3 has interrupt this player that player Index : 3 has won the game

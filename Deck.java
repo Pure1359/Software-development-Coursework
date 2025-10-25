@@ -1,4 +1,5 @@
 import java.util.ArrayDeque;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class Deck {
@@ -7,24 +8,33 @@ public class Deck {
 
     private volatile ArrayDeque<Card> cardList = new ArrayDeque<>();
 
+    private AtomicBoolean inUsed = new AtomicBoolean(false);
+
     public Deck(int deckPriority){
         this.deckPriority = deckPriority;
     }
 
     public boolean tryLock(){
-        return deckLock.tryLock();
+        if(deckLock.tryLock()){
+           
+            detectConcurrentAccess();
+            return true;
+        } else{
+            return false;
+        }
     }
 
     public void unlock(){
+        // Very important must set the flag before unlock, otherwise we might get fake result suggesting concurrent access occur.
+        inUsed.set(false);
         deckLock.unlock();
+       
+        
     }
 
     public void lockthis(){
-        try {
-            deckLock.lockInterruptibly();
-          
-        } catch (InterruptedException e) {
-        }
+        deckLock.lock();
+        detectConcurrentAccess();
     }
 
     public ArrayDeque<Card> getDeckCardList(){
@@ -44,5 +54,11 @@ public class Deck {
 
     public boolean isEmpty(){
         return (cardList.isEmpty());
+    }
+
+    private void detectConcurrentAccess(){
+        if (!inUsed.compareAndSet(false, true)){
+            throw new ConcurrentAccessException("Concurrent access Dectected");
+        }
     }
 }

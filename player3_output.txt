@@ -1,4 +1,7 @@
-Player 3 withDrawn a 2 from left deck left deck is now : [1, 2, 2, 1, 3, 5, 1, 0, 5]player hand is : [4, 5, 3, 1, 2] and then discard 4 to the right deck right deck is now [4, 4, 0, 2, 0, 0, 0, 4]player hand is : [5, 3, 1, 2]
-Player 3 withDrawn a 1 from left deck left deck is now : [2, 2, 1, 3, 5, 1, 0, 5, 4]player hand is : [5, 3, 1, 2, 1] and then discard 5 to the right deck right deck is now [0, 2, 0, 0, 0, 4, 5]player hand is : [3, 1, 2, 1]
-Player 3 withDrawn a 2 from left deck left deck is now : [2, 1, 3, 5, 1, 0, 5, 4]player hand is : [3, 1, 2, 1, 2] and then discard 1 to the right deck right deck is now [0, 2, 0, 0, 0, 4, 5, 1]player hand is : [3, 2, 1, 2]
-0 has interrupt this player that player Index : 0 has won the game
+Player 3 withDrawn a 5 from left deck left deck is now : [3, 8, 6, 3]player hand is : [3, 8, 7, 6, 5] and then discard 8 to the right deck right deck is now [5, 6, 3, 1, 8]player hand is : [3, 7, 6, 5]
+Player 3 withDrawn a 3 from left deck left deck is now : [8, 6, 3, 3]player hand is : [3, 7, 6, 5, 3] and then discard 7 to the right deck right deck is now [6, 3, 1, 8, 7]player hand is : [3, 6, 5, 3]
+Player 3 withDrawn a 8 from left deck left deck is now : [6, 3, 3]player hand is : [3, 6, 5, 3, 8] and then discard 6 to the right deck right deck is now [3, 1, 8, 7, 6]player hand is : [3, 5, 3, 8]
+Player 3 withDrawn a 6 from left deck left deck is now : [3, 3, 3]player hand is : [3, 5, 3, 8, 6] and then discard 5 to the right deck right deck is now [1, 8, 7, 6, 5]player hand is : [3, 3, 8, 6]
+Player 3 withDrawn a 3 from left deck left deck is now : [3, 3, 8]player hand is : [3, 3, 8, 6, 3] and then discard 8 to the right deck right deck is now [8, 7, 6, 5, 8]player hand is : [3, 3, 6, 3]
+Player 3 withDrawn a 3 from left deck left deck is now : [3, 8, 8]player hand is : [3, 3, 6, 3, 3] and then discard 6 to the right deck right deck is now [7, 6, 5, 8, 6]player hand is : [3, 3, 3, 3]
+Player Index : 3has won the game and hence interrupt this thread to stop playing3 has interrupt this player that player Index : 3 has won the game

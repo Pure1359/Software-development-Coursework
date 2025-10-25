@@ -12,28 +12,40 @@ class CardGame {
     public static Deck[] deckArr = null;
     public static Thread[] threadList = null;
     public static void main(String[] args) {
+
+        if (args.length > 0 && args[0].equals("test")){
+            System.out.println("testing");
+            startTest(5);
+        } else{
+            startGame(false);
+        }
         
+    }
+
+    public static void startGame(boolean testing){
+
+        String filename;
         Scanner myObj = new Scanner(System.in);  // Create a Scanner object
-       
+    
         System.out.println("Please enter the number of players");
         int n = myObj.nextInt();  // Read user input
         myObj.nextLine();
 
         System.out.println("Please enter location of pack to load");
-        String filename = myObj.nextLine();  // Read user input
+        filename = myObj.nextLine();  // Read user input
         myObj.close(); // close the scanenr object
 
         playerArr = new Player[n];
         threadList = new Thread[n];
         deckArr = new Deck[n];
-          
+        
         for (int i = 0; i < n; i++) {
             playerArr[i] = new Player(i);
             threadList[i] = new Thread(playerArr[i]);
         }
 
         for (int i = 0; i < n; i++){
-          deckArr[i] = new Deck(i);
+        deckArr[i] = new Deck(i);
         }
 
         for (int i = 0; i < n; i++) {
@@ -59,18 +71,18 @@ class CardGame {
             int cardTaken = 0;
 
             while (read != null){
-              if (cardTaken < 4 * n){
-                  playerIndex = playerIndex % n;
-                  playerArr[playerIndex].getPlayerCard().add(new Card(Integer.parseInt(read)));
-                  playerIndex++;
-                  cardTaken++;
-              } else{
-                  deckIndex = deckIndex % n;
-                  deckArr[deckIndex].receiveCard(new Card(Integer.parseInt(read)));
-                  deckIndex++;
-              }
+            if (cardTaken < 4 * n){
+                playerIndex = playerIndex % n;
+                playerArr[playerIndex].getPlayerCard().add(new Card(Integer.parseInt(read)));
+                playerIndex++;
+                cardTaken++;
+            } else{
+                deckIndex = deckIndex % n;
+                deckArr[deckIndex].receiveCard(new Card(Integer.parseInt(read)));
+                deckIndex++;
+            }
             
-              read = readFile.readLine();
+            read = readFile.readLine();
             }
 
             logging(playerArr);
@@ -93,7 +105,63 @@ class CardGame {
         } catch (IOException k){
 
         }
-    
+        
+        
+    }
+
+    public static void startTest(int numsPlayer){
+        playerArr = new Player[numsPlayer];
+        threadList = new Thread[numsPlayer];
+        deckArr = new Deck[numsPlayer];
+        
+        for (int i = 0; i < numsPlayer; i++) {
+            playerArr[i] = new Player(i);
+            threadList[i] = new Thread(playerArr[i]);
+        }
+
+        for (int i = 0; i < numsPlayer; i++){
+        deckArr[i] = new Deck(i);
+        }
+
+        for (int i = 0; i < numsPlayer; i++) {
+            Player player = playerArr[i];
+            if (i == 0) {
+                player.setLeftDeck(deckArr[numsPlayer - 1]);
+                player.setRightDeck(deckArr[i]);
+            } else {
+                player.setLeftDeck(deckArr[i - 1]);
+                player.setRightDeck(deckArr[i]);
+            }
+        }
+
+        //Round robin distribution to player
+        try {
+            BufferedReader readFile = new BufferedReader(new FileReader("testing/deckTest.txt"));
+            
+            // begin round robin distribution to the player
+            String read = readFile.readLine();
+
+            int playerIndex = 0;
+            int deckIndex = 0;
+            int cardTaken = 0;
+
+            while (read != null){
+            if (cardTaken < 4 * numsPlayer){
+                playerIndex = playerIndex % numsPlayer;
+                playerArr[playerIndex].getPlayerCard().add(new Card(Integer.parseInt(read)));
+                playerIndex++;
+                cardTaken++;
+            } else{
+                deckIndex = deckIndex % numsPlayer;
+                deckArr[deckIndex].receiveCard(new Card(Integer.parseInt(read)));
+                deckIndex++;
+            }
+            
+            read = readFile.readLine();
+            }
+        } catch(IOException e){
+
+        }
     }
 
     public static void logging(Player[] playerArr){
