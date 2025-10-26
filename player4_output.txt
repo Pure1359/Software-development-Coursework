@@ -1,6 +1,11 @@
-Player 4 withDrawn a 5 from left deck left deck is now : [6, 3, 1, 8]player hand is : [4, 4, 2, 5, 5] and then discard 2 to the right deck right deck is now [7, 6, 8, 2]player hand is : [4, 4, 5, 5]
-Player 4 withDrawn a 6 from left deck left deck is now : [3, 1, 8, 7]player hand is : [4, 4, 5, 5, 6] and then discard 5 to the right deck right deck is now [6, 8, 2, 5]player hand is : [4, 4, 5, 6]
-Player 4 withDrawn a 3 from left deck left deck is now : [1, 8, 7, 6]player hand is : [4, 4, 5, 6, 3] and then discard 5 to the right deck right deck is now [8, 2, 5, 5]player hand is : [4, 4, 6, 3]
-Player 4 withDrawn a 1 from left deck left deck is now : [8, 7, 6, 5]player hand is : [4, 4, 6, 3, 1] and then discard 6 to the right deck right deck is now [2, 5, 5, 6]player hand is : [4, 4, 3, 1]
-Player 4 withDrawn a 8 from left deck left deck is now : [7, 6, 5, 8]player hand is : [4, 4, 3, 1, 8] and then discard 3 to the right deck right deck is now [5, 5, 6, 3]player hand is : [4, 4, 1, 8]
-3 has interrupt this player that player Index : 3 has won the game
+Player 4 withDrawn a 2 from left deck left deck is now : [0, 0, 6]player hand is : [3, 2, 3, 6, 2] and then discard 3 to the right deck right deck is now [4, 5, 7, 4, 3]player hand is : [2, 3, 6, 2]
+Player 4 withDrawn a 0 from left deck left deck is now : [0, 6, 4, 6]player hand is : [2, 3, 6, 2, 0] and then discard 2 to the right deck right deck is now [5, 7, 4, 3, 2]player hand is : [3, 6, 2, 0]
+Player 4 withDrawn a 0 from left deck left deck is now : [6, 4, 6, 5]player hand is : [3, 6, 2, 0, 0] and then discard 3 to the right deck right deck is now [7, 4, 3, 2, 3]player hand is : [6, 2, 0, 0]
+Player 4 withDrawn a 6 from left deck left deck is now : [4, 6, 5, 5]player hand is : [6, 2, 0, 0, 6] and then discard 6 to the right deck right deck is now [4, 3, 2, 3, 6]player hand is : [2, 0, 0, 6]
+Player 4 withDrawn a 4 from left deck left deck is now : [6, 5, 5, 6]player hand is : [2, 0, 0, 6, 4] and then discard 2 to the right deck right deck is now [3, 2, 3, 6, 2]player hand is : [0, 0, 6, 4]
+Player 4 withDrawn a 6 from left deck left deck is now : [5, 5, 6, 4]player hand is : [0, 0, 6, 4, 6] and then discard 0 to the right deck right deck is now [2, 3, 6, 2, 0]player hand is : [0, 6, 4, 6]
+Player 4 withDrawn a 5 from left deck left deck is now : [5, 6, 4, 6]player hand is : [0, 6, 4, 6, 5] and then discard 0 to the right deck right deck is now [3, 6, 2, 0, 0]player hand is : [6, 4, 6, 5]
+Player 4 withDrawn a 5 from left deck left deck is now : [6, 4, 6, 6]player hand is : [6, 4, 6, 5, 5] and then discard 6 to the right deck right deck is now [6, 2, 0, 0, 6]player hand is : [4, 6, 5, 5]
+Player 4 withDrawn a 6 from left deck left deck is now : [4, 6, 6, 1]player hand is : [4, 6, 5, 5, 6] and then discard 6 to the right deck right deck is now [2, 0, 0, 6, 6]player hand is : [4, 5, 5, 6]
+Player 4 withDrawn a 4 from left deck left deck is now : [6, 6, 1, 6]player hand is : [4, 5, 5, 6, 4] and then discard 5 to the right deck right deck is now [0, 0, 6, 6, 5]player hand is : [4, 5, 6, 4]
+3 won the game and has interrupt this thread to stop

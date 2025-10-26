@@ -31,8 +31,14 @@ class CardGame {
         int n = myObj.nextInt();  // Read user input
         myObj.nextLine();
 
-        System.out.println("Please enter location of pack to load");
-        filename = myObj.nextLine();  // Read user input
+        
+
+        do {
+            System.out.println("Please enter location of pack to load");
+            filename = myObj.nextLine();  // Read user input
+        } while (!validateFile(filename));
+
+
         myObj.close(); // close the scanenr object
 
         playerArr = new Player[n];
@@ -40,12 +46,12 @@ class CardGame {
         deckArr = new Deck[n];
         
         for (int i = 0; i < n; i++) {
-            playerArr[i] = new Player(i);
+            playerArr[i] = new Player(i, "player" + i + "_output.txt");
             threadList[i] = new Thread(playerArr[i]);
         }
 
         for (int i = 0; i < n; i++){
-        deckArr[i] = new Deck(i);
+        deckArr[i] = new Deck(i, "deck" + i + "_output.txt");
         }
 
         for (int i = 0; i < n; i++) {
@@ -86,26 +92,18 @@ class CardGame {
             }
 
             logging(playerArr);
-
-            for (Thread eachThread : threadList){
-                eachThread.start();
-            }
-
-            for (Thread eachThread : threadList){
-                try {
-                    eachThread.join();
-                } catch (InterruptedException e){
-                }
-            }
-
             readFile.close();
 
-        } catch (FileNotFoundException e) {
-            System.out.println("file not found");
-        } catch (IOException k){
+            startThread();
 
+            for (Deck eachDeck : deckArr){
+                eachDeck.writeDeckContent();
+            }
+
+        } catch (IOException e){
+            System.out.println(e.getMessage());
         }
-        
+
         
     }
 
@@ -115,12 +113,12 @@ class CardGame {
         deckArr = new Deck[numsPlayer];
         
         for (int i = 0; i < numsPlayer; i++) {
-            playerArr[i] = new Player(i);
+            playerArr[i] = new Player(i, "testing/player" + i + "_output.txt");
             threadList[i] = new Thread(playerArr[i]);
         }
 
         for (int i = 0; i < numsPlayer; i++){
-        deckArr[i] = new Deck(i);
+        deckArr[i] = new Deck(i, "testing/deck" + i + "_output.txt");
         }
 
         for (int i = 0; i < numsPlayer; i++) {
@@ -164,6 +162,59 @@ class CardGame {
         }
     }
 
+    public static void startThread(){
+
+        ArrayList<Throwable> exceptionList = new ArrayList<>();
+
+        for (Thread eachThread : threadList){
+                eachThread.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+                    @Override
+                    public void uncaughtException(Thread thisThread, Throwable RunTimeError) {
+                        exceptionList.add(RunTimeError);
+                        interruptAllThread();
+                    }
+                    
+                });
+                eachThread.start();
+        }
+        for (Thread eachThread : threadList){
+            try {
+                eachThread.join();
+            } catch (InterruptedException e){
+               System.out.println("Something wrong occur");
+            } 
+        }
+
+        for (Throwable eachThrowable : exceptionList){
+            if (eachThrowable instanceof ConcurrentAccessException){
+                throw new ConcurrentAccessException("Concurrent Access Detected!");
+            }
+        }     
+    }
+    public static boolean validateFile(String path){
+       try{
+            BufferedReader readFile = new BufferedReader(new FileReader(path));
+            String read = readFile.readLine();
+            while (read != null){
+                int value = Integer.parseInt(read);
+                if (value >= 0){
+                    read = readFile.readLine();
+                } else{
+                    throw new NumberFormatException("Negative value detected");
+                }
+            }
+            
+       } catch (IOException e){
+            System.out.println("No deck found on such path given :" + e.getMessage());
+            return false;
+       } catch (NumberFormatException n){
+            System.out.println("Invalid content in the deck specified : " + n.getMessage());
+            return false;
+       }
+
+       return true;
+
+    }
     public static void logging(Player[] playerArr){
         for (Player eachPlayer : playerArr){
                 Deck leftDeck = eachPlayer.getLeftDeck();
@@ -174,7 +225,6 @@ class CardGame {
             }
     }
 
-    
     public static void checkSum(){
         ArrayList<Card> useless = new ArrayList<Card>();
         for (Player eachPlayer : playerArr){
@@ -191,5 +241,10 @@ class CardGame {
         System.out.println(useless.size());
         System.out.println(useless);
 
+    }
+    private static void interruptAllThread(){
+        for (Thread eachThread : threadList){
+            eachThread.interrupt();
+        }
     }
 }

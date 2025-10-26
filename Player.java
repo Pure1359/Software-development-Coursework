@@ -14,10 +14,10 @@ public class Player implements Runnable {
     ArrayList<Card> playerCard = new ArrayList<>();
 
     // Constructor and Setter function , nothing special
-    public Player(int playerIndex){
+    public Player(int playerIndex, String filepath){
         this.playerIndex = playerIndex;
         try {
-            writetoFile = new BufferedWriter(new FileWriter("player" + playerIndex + "_output.txt"));
+            writetoFile = new BufferedWriter(new FileWriter(filepath));
         } catch (IOException e){
             System.out.println("Can not create the file");
         }
@@ -31,7 +31,8 @@ public class Player implements Runnable {
     }
 
     @Override
-    public void run() {
+    public void run(){
+       
         //This is atomic action Get card from left, discard to right
         while (!Thread.currentThread().isInterrupted()) {
             // Try to acquire both left and right deck by locking left first and then locking right 
@@ -76,23 +77,23 @@ public class Player implements Runnable {
                 leftDeck.unlock();
             }
             if (CardGame.whoWon != null){
-               break;
+            break;
             }
             /*
-             * We start a player thread by using for loop which mean that player at the start of playerArr in CardGame are more likely to start playing first
-             * For example : Player 1 are very more likely to play first before Player 5
-             *             : Player 1 will have more chance to lock their left and right deck again , due to how to the thread scheduler work
-             *             : To make sure player 3 , 4, 5, have more chance to play evenly we can use time out, so that there is a time, where other thread may join
-             */            
+            * We start a player thread by using for loop which mean that player at the start of playerArr in CardGame are more likely to start playing first
+            * For example : Player 1 are very more likely to play first before Player 5
+            *             : Player 1 will have more chance to lock their left and right deck again , due to how to the thread scheduler work
+            *             : To make sure player 3 , 4, 5, have more chance to play evenly we can use time out, so that there is a time, where other thread may join
+            */            
             try{
-                Thread.sleep(100L);
+                Thread.sleep(50L);
             }  catch (InterruptedException e){
                     Thread.currentThread().interrupt();
             }
         }
         System.out.println("Player Index : " + playerIndex + " thread has stopped");
-        writeDatatoFile(CardGame.whoWon.playerIndex + " has interrupt this player that player Index : " + CardGame.whoWon.playerIndex + " has won the game");
-           
+        writeDatatoFile(CardGame.whoWon.playerIndex + " won the game and has interrupt this thread to stop");
+       
         
     }
     //Withdrawn a card from the left deck

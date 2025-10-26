@@ -2,6 +2,7 @@
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
@@ -62,6 +63,17 @@ public class PlayerTest {
         d2 = mockCardGame.deckArr[2];
         d3 = mockCardGame.deckArr[3];
         d4 = mockCardGame.deckArr[4];
+    }
+
+    @Test
+    public void validDateDeckLocation(){
+        assertFalse(mockCardGame.validateFile("testing/deckThatdoesNotExists.txt"));
+        System.out.println("Test pass for validate location of deck file");
+    }
+    @Test
+    public void validDateDeckContent(){
+        assertFalse(mockCardGame.validateFile("testing/invalidDeck.txt"));
+        System.out.println("Test pass for validate content of deck file");
     }
 
     @Test
