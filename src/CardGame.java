@@ -14,51 +14,50 @@ public class CardGame {
     public static Thread[] threadList = null;
     public static void main(String[] args) {
 
-        if (args.length > 0 && args[0].equals("test")){
-            System.out.println("testing");
-            startTest(5);
-        } else{
-            startGame(false);
-        }
+        startGame();
         
     }
 
-    public static void startGame(boolean testing){
-
+    public static void startGame(){
+        String numString;
         String filename;
+        int numberOfPlayer;
         Scanner myObj = new Scanner(System.in);  // Create a Scanner object
-    
-        System.out.println("Please enter the number of players");
-        int n = myObj.nextInt();  // Read user input
-        myObj.nextLine();
-
         
+       
+        do{
+            System.out.println("Please enter the number of players");
+            numString = myObj.nextLine();  // Read user input
+        } while (!validateNumberOfPlayer(numString));
+
+        numberOfPlayer = Integer.parseInt(numString);
+            
 
         do {
             System.out.println("Please enter location of pack to load");
             filename = myObj.nextLine();  // Read user input
-        } while (!validateFile(filename, n));
+        } while (!validateFile(filename, numberOfPlayer));
 
 
         myObj.close(); // close the scanenr object
 
-        playerArr = new Player[n];
-        threadList = new Thread[n];
-        deckArr = new Deck[n];
+        playerArr = new Player[numberOfPlayer];
+        threadList = new Thread[numberOfPlayer];
+        deckArr = new Deck[numberOfPlayer];
         
-        for (int i = 0; i < n; i++) {
+        for (int i = 0; i < numberOfPlayer; i++) {
             playerArr[i] = new Player(i, "output/player" + i + "_output.txt");
             threadList[i] = new Thread(playerArr[i]);
         }
 
-        for (int i = 0; i < n; i++){
+        for (int i = 0; i < numberOfPlayer; i++){
         deckArr[i] = new Deck(i, "output/deck" + i + "_output.txt");
         }
 
-        for (int i = 0; i < n; i++) {
+        for (int i = 0; i < numberOfPlayer; i++) {
             Player player = playerArr[i];
             if (i == 0) {
-                player.setLeftDeck(deckArr[n - 1]);
+                player.setLeftDeck(deckArr[numberOfPlayer - 1]);
                 player.setRightDeck(deckArr[i]);
             } else {
                 player.setLeftDeck(deckArr[i - 1]);
@@ -78,13 +77,13 @@ public class CardGame {
             int cardTaken = 0;
 
             while (read != null){
-            if (cardTaken < 4 * n){
-                playerIndex = playerIndex % n;
+            if (cardTaken < 4 * numberOfPlayer){
+                playerIndex = playerIndex % numberOfPlayer;
                 playerArr[playerIndex].getPlayerCard().add(new Card(Integer.parseInt(read)));
                 playerIndex++;
                 cardTaken++;
             } else{
-                deckIndex = deckIndex % n;
+                deckIndex = deckIndex % numberOfPlayer;
                 deckArr[deckIndex].receiveCard(new Card(Integer.parseInt(read)));
                 deckIndex++;
             }
@@ -109,6 +108,7 @@ public class CardGame {
         
     }
 
+    
     public static void startTest(int numsPlayer){
         playerArr = new Player[numsPlayer];
         threadList = new Thread[numsPlayer];
@@ -223,6 +223,21 @@ public class CardGame {
 
        return true;
 
+    }
+
+    public static boolean validateNumberOfPlayer(String numString){
+        try{
+            int tempN = Integer.parseInt(numString);
+            if (tempN <= 0){
+                System.out.println("Invalid Number of player, must be > 0");
+                return false;
+            }
+        } catch (NumberFormatException n){
+            System.out.println("Invalid number input : " + n.getMessage());
+            return false;
+        }
+
+        return true;
     }
     public static void logging(Player[] playerArr){
         for (Player eachPlayer : playerArr){
