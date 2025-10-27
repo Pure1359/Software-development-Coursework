@@ -7,6 +7,12 @@ import static org.junit.Assert.assertTrue;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
+
+import src.Card;
+import src.CardGame;
+import src.Deck;
+import src.Player;
+
 import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
 
@@ -34,17 +40,17 @@ public class PlayerTest {
 
 
     public static void main(String[] args) {
-    Result result = JUnitCore.runClasses(PlayerTest.class);
+        Result result = JUnitCore.runClasses(PlayerTest.class);
 
-    for (Failure failure : result.getFailures()) {
-        System.out.println(failure.getTestHeader() + " failed: " + failure.getMessage());
-    }
+        for (Failure failure : result.getFailures()) {
+            System.out.println(failure.getTestHeader() + " failed: " + failure.getMessage());
+        }
 
-    if(result.wasSuccessful()) {
-        System.out.println("All tests passed!");
-    } else{
-        System.out.println("Some Test fail!");
-    }
+        if(result.wasSuccessful()) {
+            System.out.println("All tests passed!");
+        } else{
+            System.out.println("Some Test fail!");
+        }
 }
 
 
@@ -67,12 +73,17 @@ public class PlayerTest {
 
     @Test
     public void validDateDeckLocation(){
-        assertFalse(mockCardGame.validateFile("testing/deckThatdoesNotExists.txt"));
+        assertFalse(mockCardGame.validateFile("testing/deckThatdoesNotExists.txt", 5));
         System.out.println("Test pass for validate location of deck file");
     }
     @Test
     public void validDateDeckContent(){
-        assertFalse(mockCardGame.validateFile("testing/invalidDeck.txt"));
+        assertFalse(mockCardGame.validateFile("testing/invalidDeck.txt", 5));
+        assertFalse(mockCardGame.validateFile("testing/invalidDeck2.txt", 5));
+        assertFalse(mockCardGame.validateFile("testing/invalidDeck3.txt", 5));
+        assertFalse(mockCardGame.validateFile("testing/invalidDeck4.txt", 5));
+       
+        
         System.out.println("Test pass for validate content of deck file");
     }
 

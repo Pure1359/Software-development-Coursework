@@ -1,3 +1,4 @@
+package src;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -6,7 +7,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-class CardGame {
+public class CardGame {
     public static volatile  Player whoWon = null;
     public static Player[] playerArr = null;
     public static Deck[] deckArr = null;
@@ -36,7 +37,7 @@ class CardGame {
         do {
             System.out.println("Please enter location of pack to load");
             filename = myObj.nextLine();  // Read user input
-        } while (!validateFile(filename));
+        } while (!validateFile(filename, n));
 
 
         myObj.close(); // close the scanenr object
@@ -46,12 +47,12 @@ class CardGame {
         deckArr = new Deck[n];
         
         for (int i = 0; i < n; i++) {
-            playerArr[i] = new Player(i, "player" + i + "_output.txt");
+            playerArr[i] = new Player(i, "output/player" + i + "_output.txt");
             threadList[i] = new Thread(playerArr[i]);
         }
 
         for (int i = 0; i < n; i++){
-        deckArr[i] = new Deck(i, "deck" + i + "_output.txt");
+        deckArr[i] = new Deck(i, "output/deck" + i + "_output.txt");
         }
 
         for (int i = 0; i < n; i++) {
@@ -192,17 +193,24 @@ class CardGame {
             }
         }     
     }
-    public static boolean validateFile(String path){
+    public static boolean validateFile(String path, int playerAmount){
        try{
             BufferedReader readFile = new BufferedReader(new FileReader(path));
             String read = readFile.readLine();
+            int cardAmount = 0;
             while (read != null){
                 int value = Integer.parseInt(read);
                 if (value >= 0){
+                    cardAmount++;
                     read = readFile.readLine();
                 } else{
                     throw new NumberFormatException("Negative value detected");
                 }
+            }
+
+            if (cardAmount != playerAmount * 8){
+                System.out.println("Invalid amount of card is not valid for " + playerAmount + " amount of players");
+                return false;
             }
             
        } catch (IOException e){

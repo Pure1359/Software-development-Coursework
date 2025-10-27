@@ -4,6 +4,11 @@ import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
 
+import src.CardGame;
+import src.ConcurrentAccessException;
+import src.Deck;
+import src.Player;
+
 import static org.junit.Assert.fail;
 
 import java.io.BufferedReader;
@@ -30,7 +35,7 @@ public class GamePlayTesting {
     private Deck d4;
 
     public static void main(String[] args) {
-        Result result = JUnitCore.runClasses(GamePlayTesting.class);
+        Result result = JUnitCore.runClasses(PlayerTest.class);
 
         for (Failure failure : result.getFailures()) {
             System.out.println(failure.getTestHeader() + " failed: " + failure.getMessage());
@@ -42,6 +47,7 @@ public class GamePlayTesting {
             System.out.println("Some Test fail!");
         }
     }
+
 
     @Before
     public void setup(){
@@ -65,20 +71,21 @@ public class GamePlayTesting {
         
         try{
             mockCardGame.startThread();
+            
         } catch (ConcurrentAccessException c){
             fail("Test Fail : Concurrent acess Dectected");
-        }
+        } 
 
         System.out.println("Test for No concurrent access ");
     }
 
     @Test 
-    public void checkWriteToPlayerFile(){
-        File p0 = new File("player0_output.txt");
-        File p1 = new File("player1_output.txt");
-        File p2 = new File("player2_output.txt");
-        File p3 = new File("player3_output.txt");
-        File p4 = new File("player4_output.txt");
+    public void checkPlayerFileExists(){
+        File p0 = new File("testing/player0_output.txt");
+        File p1 = new File("testing/player1_output.txt");
+        File p2 = new File("testing/player2_output.txt");
+        File p3 = new File("testing/player3_output.txt");
+        File p4 = new File("testing/player4_output.txt");
 
         if (!p0.exists() || !p1.exists() || !p2.exists() || !p3.exists() || !p4.exists()){
             fail("Some file for player is not created");
@@ -89,11 +96,11 @@ public class GamePlayTesting {
 
     @Test
     public void checkDeckFileExists(){
-        File d0 = new File("deck0_output.txt");
-        File d1 = new File("deck1_output.txt");
-        File d2 = new File("deck2_output.txt");
-        File d3 = new File("deck3_output.txt");
-        File d4 = new File("deck4_output.txt");
+        File d0 = new File("testing/deck0_output.txt");
+        File d1 = new File("testing/deck1_output.txt");
+        File d2 = new File("testing/deck2_output.txt");
+        File d3 = new File("testing/deck3_output.txt");
+        File d4 = new File("testing/deck4_output.txt");
 
         if (!d0.exists() || !d1.exists() || !d2.exists() || !d3.exists() || !d4.exists()) {
             fail("Some file for deck is not created");

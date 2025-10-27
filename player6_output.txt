@@ -1,5 +1,0 @@
-Player 6 withDrawn a 8 from left deck left deck is now : [0, 7, 6, 2, 0, 6]player hand is : [6, 2, 8, 6, 8] and then discard 2 to the right deck right deck is now [4, 3, 2]player hand is : [6, 8, 6, 8]
-Player 6 withDrawn a 0 from left deck left deck is now : [7, 6, 2, 0, 6, 6]player hand is : [6, 8, 6, 8, 0] and then discard 8 to the right deck right deck is now [3, 2, 8]player hand is : [6, 6, 8, 0]
-Player 6 withDrawn a 7 from left deck left deck is now : [6, 2, 0, 6, 6, 7]player hand is : [6, 6, 8, 0, 7] and then discard 8 to the right deck right deck is now [2, 8, 8]player hand is : [6, 6, 0, 7]
-Player 6 withDrawn a 6 from left deck left deck is now : [2, 0, 6, 6, 7, 6]player hand is : [6, 6, 0, 7, 6] and then discard 0 to the right deck right deck is now [8, 8, 0]player hand is : [6, 6, 7, 6]
-3 has interrupt this player that player Index : 3 has won the game
