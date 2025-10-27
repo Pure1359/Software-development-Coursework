@@ -95,6 +95,7 @@ class CardGame {
             readFile.close();
 
             startThread();
+            System.out.println(checkSum());
 
             for (Deck eachDeck : deckArr){
                 eachDeck.writeDeckContent();
@@ -225,21 +226,21 @@ class CardGame {
             }
     }
 
-    public static void checkSum(){
-        ArrayList<Card> useless = new ArrayList<Card>();
+    public static ArrayList<Integer> checkSum(){
+        ArrayList<Integer> allCard = new ArrayList<>();
         for (Player eachPlayer : playerArr){
             for (Card eachCard : eachPlayer.getPlayerCard()){
-                useless.add(eachCard);
+                allCard.add(eachCard.getValue());
             }
         }
 
         for (Deck eachDeck : deckArr){
             for (Card eachCard : eachDeck.getCardList()){
-                useless.add(eachCard);
+                allCard.add(eachCard.getValue());
             }
         }
-        System.out.println(useless.size());
-        System.out.println(useless);
+        
+        return allCard;
 
     }
     private static void interruptAllThread(){

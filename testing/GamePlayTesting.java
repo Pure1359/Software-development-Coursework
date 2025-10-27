@@ -6,7 +6,13 @@ import org.junit.runner.notification.Failure;
 
 import static org.junit.Assert.fail;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 
 public class GamePlayTesting {
     private CardGame mockCardGame = new CardGame();
@@ -63,11 +69,7 @@ public class GamePlayTesting {
             fail("Test Fail : Concurrent acess Dectected");
         }
 
-        System.out.println("Test passs");
-    }
-
-    @Test
-    public void checkSum(){
+        System.out.println("Test for No concurrent access ");
     }
 
     @Test 
@@ -93,5 +95,37 @@ public class GamePlayTesting {
         File d3 = new File("deck3_output.txt");
         File d4 = new File("deck4_output.txt");
 
+        if (!d0.exists() || !d1.exists() || !d2.exists() || !d3.exists() || !d4.exists()) {
+            fail("Some file for deck is not created");
+        }
+
+        System.out.println("Test pass for checkDeckFileExists");
+
+
+    }
+
+    @Test
+    public void noCardLost(){
+        ArrayList<Integer> originalCards = new ArrayList<>();
+
+        try {
+            BufferedReader readData = new BufferedReader(new FileReader("testing/deckTest.txt"));
+            String content = readData.readLine();
+            while (content != null){
+                 originalCards.add((int) Integer.parseInt(content));
+                content = readData.readLine();
+            }
+
+            Collections.sort(originalCards);
+
+            ArrayList<Integer> checkSum = mockCardGame.checkSum();
+            Collections.sort(checkSum);
+            if (checkSum.equals(originalCards)){
+                System.out.println("Test pass for : no card lost, total card before and after game is the same");
+            } else{
+                fail("The total original card and the card after game end is not the same");
+            }
+        } catch (IOException e) {
+        }
     }
 }

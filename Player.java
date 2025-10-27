@@ -64,7 +64,6 @@ public class Player implements Runnable {
                         CardGame.whoWon = this;
                         System.out.println("Player Index : " + playerIndex + " Win");
                         writeDatatoFile("Player Index : " + CardGame.whoWon.playerIndex + "has won the game and hence interrupt this thread to stop playing");
-                        CardGame.checkSum();
                         leftDeck.unlock();
                         rightDeck.unlock();
                         break;
