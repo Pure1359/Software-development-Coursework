@@ -1,1 +1,1 @@
-Deck content : 1 10 0 8 10 
+Deck content : 10 0 8 
