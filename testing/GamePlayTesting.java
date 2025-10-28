@@ -3,39 +3,35 @@ import org.junit.Test;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
-
 import src.CardGame;
 import src.ConcurrentAccessException;
 import src.Deck;
 import src.Player;
-
 import static org.junit.Assert.fail;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 
 public class GamePlayTesting {
     private CardGame mockCardGame = new CardGame();
 
-    private Player p0;
     private Player p1;
     private Player p2;
     private Player p3;
     private Player p4;
+    private Player p5;
 
-    private Deck d0;
     private Deck d1;
     private Deck d2;
     private Deck d3;
     private Deck d4;
+    private Deck d5;
 
     public static void main(String[] args) {
-        Result result = JUnitCore.runClasses(PlayerTest.class);
+        Result result = JUnitCore.runClasses(GamePlayTesting.class);
 
         for (Failure failure : result.getFailures()) {
             System.out.println(failure.getTestHeader() + " failed: " + failure.getMessage());
@@ -53,20 +49,21 @@ public class GamePlayTesting {
     public void setup(){
         mockCardGame.startTest(5);
 
-        p0 = mockCardGame.playerArr[0];
-        p1 = mockCardGame.playerArr[1];
-        p2 = mockCardGame.playerArr[2];
-        p3 = mockCardGame.playerArr[3];
-        p4 = mockCardGame.playerArr[4];
+        p1 = mockCardGame.playerArr[0];
+        p2 = mockCardGame.playerArr[1];
+        p3 = mockCardGame.playerArr[2];
+        p4 = mockCardGame.playerArr[3];
+        p5 = mockCardGame.playerArr[4];
 
-        d0 = mockCardGame.deckArr[0];
-        d1 = mockCardGame.deckArr[1];
-        d2 = mockCardGame.deckArr[2];
-        d3 = mockCardGame.deckArr[3];
-        d4 = mockCardGame.deckArr[4];
+        d1 = mockCardGame.deckArr[0];
+        d2 = mockCardGame.deckArr[1];
+        d3 = mockCardGame.deckArr[2];
+        d4 = mockCardGame.deckArr[3];
+        d5 = mockCardGame.deckArr[4];
     }
 
     @Test
+    //Test to see if 2 or more thread access the same deck at the same time (exception for game with only 1 player)
     public void detectConcurrentAccessTesting(){
         
         try{
@@ -76,18 +73,19 @@ public class GamePlayTesting {
             fail("Test Fail : Concurrent acess Dectected");
         } 
 
-        System.out.println("Test for No concurrent access ");
+        System.out.println("Test pass for No concurrent access ");
     }
 
     @Test 
+    //Check if the output file for each player exists or not
     public void checkPlayerFileExists(){
-        File p0 = new File("testing/player0_output.txt");
         File p1 = new File("testing/player1_output.txt");
         File p2 = new File("testing/player2_output.txt");
         File p3 = new File("testing/player3_output.txt");
         File p4 = new File("testing/player4_output.txt");
+        File p5 = new File("testing/player5_output.txt");
 
-        if (!p0.exists() || !p1.exists() || !p2.exists() || !p3.exists() || !p4.exists()){
+        if (!p5.exists() || !p1.exists() || !p2.exists() || !p3.exists() || !p4.exists()){
             fail("Some file for player is not created");
         }
 
@@ -96,13 +94,14 @@ public class GamePlayTesting {
 
     @Test
     public void checkDeckFileExists(){
-        File d0 = new File("testing/deck0_output.txt");
+        //Check if the output file for each deck exists or not
+        File d5 = new File("testing/deck5_output.txt");
         File d1 = new File("testing/deck1_output.txt");
         File d2 = new File("testing/deck2_output.txt");
         File d3 = new File("testing/deck3_output.txt");
         File d4 = new File("testing/deck4_output.txt");
 
-        if (!d0.exists() || !d1.exists() || !d2.exists() || !d3.exists() || !d4.exists()) {
+        if (!d5.exists() || !d1.exists() || !d2.exists() || !d3.exists() || !d4.exists()) {
             fail("Some file for deck is not created");
         }
 
@@ -112,6 +111,8 @@ public class GamePlayTesting {
     }
 
     @Test
+    //To make sure that thread safe can do this checking the Total Card before game start == Total Card left after game start 
+    //(Read more in report)
     public void noCardLost(){
         ArrayList<Integer> originalCards = new ArrayList<>();
 
@@ -122,12 +123,13 @@ public class GamePlayTesting {
                  originalCards.add((int) Integer.parseInt(content));
                 content = readData.readLine();
             }
-
+            //We can check for content if Sort(Original Array) == Sort (after)
             Collections.sort(originalCards);
 
-            ArrayList<Integer> checkSum = mockCardGame.checkSum();
-            Collections.sort(checkSum);
-            if (checkSum.equals(originalCards)){
+            ArrayList<Integer> after = mockCardGame.checkSum();
+            Collections.sort(after);
+            //If both contain the exact same card value , then no card is lost during the game, or no card appear out of nowhere
+            if (after.equals(originalCards)){
                 System.out.println("Test pass for : no card lost, total card before and after game is the same");
             } else{
                 fail("The total original card and the card after game end is not the same");

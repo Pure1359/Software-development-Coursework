@@ -1,13 +1,2 @@
-Player 6 withDrawn a 2 from left deck left deck is now : [6, 1, 2]player hand is : [0, 6, 4, 7, 2] and then discard 0 to the right deck right deck is now [3, 4, 9, 3, 0]player hand is : [6, 4, 7, 2]
-Player 6 withDrawn a 6 from left deck left deck is now : [1, 2, 7]player hand is : [6, 4, 7, 2, 6] and then discard 4 to the right deck right deck is now [4, 9, 3, 0, 4]player hand is : [6, 7, 2, 6]
-Player 6 withDrawn a 1 from left deck left deck is now : [2, 7, 4, 2]player hand is : [6, 7, 2, 6, 1] and then discard 7 to the right deck right deck is now [3, 0, 4, 7]player hand is : [6, 2, 6, 1]
-Player 6 withDrawn a 2 from left deck left deck is now : [7, 4, 2, 6]player hand is : [6, 2, 6, 1, 2] and then discard 2 to the right deck right deck is now [0, 4, 7, 2]player hand is : [6, 6, 1, 2]
-Player 6 withDrawn a 7 from left deck left deck is now : [4, 2, 6, 3]player hand is : [6, 6, 1, 2, 7] and then discard 1 to the right deck right deck is now [4, 7, 2, 1]player hand is : [6, 6, 2, 7]
-Player 6 withDrawn a 4 from left deck left deck is now : [2, 6, 3, 1]player hand is : [6, 6, 2, 7, 4] and then discard 2 to the right deck right deck is now [7, 2, 1, 2]player hand is : [6, 6, 7, 4]
-Player 6 withDrawn a 2 from left deck left deck is now : [6, 3, 1, 7]player hand is : [6, 6, 7, 4, 2] and then discard 7 to the right deck right deck is now [2, 1, 2, 7]player hand is : [6, 6, 4, 2]
-Player 6 withDrawn a 6 from left deck left deck is now : [3, 1, 7, 2]player hand is : [6, 6, 4, 2, 6] and then discard 4 to the right deck right deck is now [1, 2, 7, 4]player hand is : [6, 6, 2, 6]
-Player 6 withDrawn a 3 from left deck left deck is now : [1, 7, 2, 7]player hand is : [6, 6, 2, 6, 3] and then discard 2 to the right deck right deck is now [2, 7, 4, 2]player hand is : [6, 6, 6, 3]
-Player 6 withDrawn a 1 from left deck left deck is now : [7, 2, 7, 10]player hand is : [6, 6, 6, 3, 1] and then discard 3 to the right deck right deck is now [7, 4, 2, 3]player hand is : [6, 6, 6, 1]
-Player 6 withDrawn a 7 from left deck left deck is now : [2, 7, 10, 10]player hand is : [6, 6, 6, 1, 7] and then discard 1 to the right deck right deck is now [4, 2, 3, 1]player hand is : [6, 6, 6, 7]
-Player 6 withDrawn a 2 from left deck left deck is now : [7, 10, 10, 8]player hand is : [6, 6, 6, 7, 2] and then discard 7 to the right deck right deck is now [2, 3, 1, 7]player hand is : [6, 6, 6, 2]
-0 won the game and has interrupt this thread to stop
+Player Index : 6 starting hand is : [5, 9, 7, 7]
+Player Index : 8 won the game and has interrupt this thread to stop

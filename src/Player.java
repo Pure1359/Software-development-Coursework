@@ -10,11 +10,10 @@ public class Player implements Runnable {
     public int playerIndex;
     private Deck leftDeck;
     private Deck rightDeck;
-    private String report;
     private  BufferedWriter writetoFile;
     ArrayList<Card> playerCard = new ArrayList<>();
 
-    // Constructor and Setter function , nothing special
+    // Constructor , specifying playerIndex and filepath
     public Player(int playerIndex, String filepath){
         this.playerIndex = playerIndex;
         try {
@@ -23,7 +22,7 @@ public class Player implements Runnable {
             System.out.println("Can not create the file");
         }
     }
-    
+    // Setter for both left and right deck
     public void setLeftDeck(Deck leftDeck){
         this.leftDeck = leftDeck;
     }
@@ -33,11 +32,23 @@ public class Player implements Runnable {
 
     @Override
     public void run(){
-       
+        //Write the initial hand to the file first
+        writeDatatoFile("Player Index : " + playerIndex + " starting hand is : " + getPlayerCard()  + "\n");
+        //if won the game immedietly then set the flag of CardGame.whoWon to this player write to file and then return immedieatly 
+        if (isWon()) {
+            CardGame.whoWon = this;
+            System.out.println("Player Index : " + playerIndex + " Win immedieatly");
+            writeDatatoFile("Player Index : " + CardGame.whoWon.playerIndex + " has won the game");
+            return;
+        }
         //This is atomic action Get card from left, discard to right
         while (!Thread.currentThread().isInterrupted()) {
             // Try to acquire both left and right deck by locking left first and then locking right 
-            leftDeck.lockthis();
+            try{
+                leftDeck.lockthis();
+            } catch (InterruptedException e){
+                break;
+            }
             if (rightDeck.tryLock()) {
                 
                 //If leftdeck is empty we must release both left and right deck to avoid dead lock.
@@ -46,6 +57,7 @@ public class Player implements Runnable {
                     leftDeck.unlock();
                 } else {
                     
+                    //Guard against continuing playing even if someoone is already won
                     if (CardGame.whoWon != null){
                         leftDeck.unlock();
                         rightDeck.unlock();
@@ -55,16 +67,17 @@ public class Player implements Runnable {
                     this.withDrawnCard();
                     this.discardingCard();
 
+                    //Another guard to avoid registering the move played if someone have already won the game
                     if (CardGame.whoWon != null){
                         leftDeck.unlock();
                         rightDeck.unlock();
                         break;
                     }
-                    
+                    //If you won the game , after some move then set the flag, write to file, release both lock, so that other thread can be interrupted, then break out of while loop
                     if (isWon()) {
                         CardGame.whoWon = this;
                         System.out.println("Player Index : " + playerIndex + " Win");
-                        writeDatatoFile("Player Index : " + CardGame.whoWon.playerIndex + "has won the game and hence interrupt this thread to stop playing");
+                        writeDatatoFile("Player Index : " + CardGame.whoWon.playerIndex + " has won the game\n");
                         leftDeck.unlock();
                         rightDeck.unlock();
                         break;
@@ -74,16 +87,16 @@ public class Player implements Runnable {
                     rightDeck.unlock();
                 }
             } else {
+                // If we can not lock the right deck, we release the left deck, this reduce change of dead lock , as we are not locking the left deck forever (read more in report)
                 leftDeck.unlock();
             }
-            if (CardGame.whoWon != null){
-            break;
-            }
+            
             /*
             * We start a player thread by using for loop which mean that player at the start of playerArr in CardGame are more likely to start playing first
             * For example : Player 1 are very more likely to play first before Player 5
             *             : Player 1 will have more chance to lock their left and right deck again , due to how to the thread scheduler work
             *             : To make sure player 3 , 4, 5, have more chance to play evenly we can use time out, so that there is a time, where other thread may join
+                          : Otherwise it might look like : Player play : 1 1 1 0 0 0 2 1 1 2 3 4 1 5 and so on, as you can see 3,4,5 are less likely to player early, even in reality they are allow to play
             */            
             try{
                 Thread.sleep(50L);
@@ -91,8 +104,10 @@ public class Player implements Runnable {
                     Thread.currentThread().interrupt();
             }
         }
+        //This will interrupt a thread that still waiting for a lock in : leftDeck.tryLock() command 
+        CardGame.interruptAllThread();
         System.out.println("Player Index : " + playerIndex + " thread has stopped");
-        writeDatatoFile(CardGame.whoWon.playerIndex + " won the game and has interrupt this thread to stop");
+        writeDatatoFile("Player Index : " + CardGame.whoWon.playerIndex + " won the game and has interrupt this thread to stop");
        
         
     }
@@ -107,6 +122,7 @@ public class Player implements Runnable {
 
     public void discardingCard(){
         ArrayDeque<Card> rightDeckCardList = rightDeck.getCardList();
+        //Get the number that are not the player preferrence
         Card differentCard = getDifferCard();
         // From specification we will dispose the card to the bottom of the deck
         rightDeckCardList.addLast(differentCard);
@@ -124,7 +140,7 @@ public class Player implements Runnable {
     }
 
     // Return and remove a card from player hand, such that a card is undesirable for player
-    public Card getDifferCard(){
+    private Card getDifferCard(){
         for (Card eachCard : playerCard){
             if (eachCard.getValue() != playerIndex){
                 playerCard.remove(eachCard);
@@ -134,7 +150,7 @@ public class Player implements Runnable {
         // This will not be called, don't worry
         return null;
     }
-
+    //Getter method
     public Deck getLeftDeck(){
         return leftDeck;
     }
