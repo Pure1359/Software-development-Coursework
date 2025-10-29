@@ -1,2 +1,0 @@
-Player Index : 8 starting hand is : [8, 8, 8, 8]
-Player Index : 8 has won the game

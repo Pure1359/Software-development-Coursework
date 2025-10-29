@@ -59,14 +59,14 @@ public class CardGame {
         //Each player implement runnable, that is why we can do threadlist = new Thread(playerArr[i])
         for (int i = 0; i < numberOfPlayer; i++) {
             //Specifying the index of player, and the output file name (starting from 1 to n)
-            playerArr[i] = new Player(i + 1, "output/player" + (i + 1) + "_output.txt");
+            playerArr[i] = new Player(i + 1, "player" + (i + 1) + "_output.txt");
             threadList[i] = new Thread(playerArr[i]);
         }
 
         //Specifiying the file name for deck output
         for (int i = 0; i < numberOfPlayer; i++){
             //deck output file name starting from 1 to n.
-            deckArr[i] = new Deck(i + 1, "output/deck" + (i + 1) + "_output.txt");
+            deckArr[i] = new Deck(i + 1, "deck" + (i + 1) + "_output.txt");
         }
 
         //This is part of design to avoid deadlock (see more in report) , For all player Index = i, their leftdeck is i -1 and rightdeck is i
@@ -84,7 +84,7 @@ public class CardGame {
 
         //began round robin distribution of card to player
         try {
-            BufferedReader readFile = new BufferedReader(new FileReader("deckfile.txt"));
+            BufferedReader readFile = new BufferedReader(new FileReader(filename));
             
            
             String read = readFile.readLine();
@@ -116,10 +116,11 @@ public class CardGame {
             //Display the initial information about the player.
             logging(playerArr);
             readFile.close();
-            //Began the game
-            startThread();
-            System.out.println(checkSum());
 
+            //Check if anyone won the game immedieatly and write the initial hand on the first line of the file
+            InitialDataAndStartThread();
+            
+            
             //after game end we write to file the remaining deck content
             for (Deck eachDeck : deckArr){
                 eachDeck.writeDeckContent();
@@ -142,7 +143,7 @@ public class CardGame {
             playerArr[i] = new Player(i + 1, "testing/player" + (i + 1) + "_output.txt");
             threadList[i] = new Thread(playerArr[i]);
         }
-
+        // Set the destination for deck output file to testing folder
         for (int i = 0; i < numsPlayer; i++){
             deckArr[i] = new Deck(i + 1, "testing/deck" + (i + 1) + "_output.txt");
         }
@@ -162,7 +163,7 @@ public class CardGame {
         try {
             BufferedReader readFile = new BufferedReader(new FileReader("testing/deckTest.txt"));
             
-            // begin round robin distribution to the player
+            // begin round robin distribution to the player, same logic as in startGame
             String read = readFile.readLine();
 
             int playerIndex = 0;
@@ -182,13 +183,45 @@ public class CardGame {
             }
             
             read = readFile.readLine();
+
             }
+            readFile.close();
+            
+            for (Deck eachDeck : deckArr){
+                eachDeck.writeDeckContent();
+            }
+
         } catch(IOException e){
 
         }
     }
+
+    public static void InitialDataAndStartThread(){
+        boolean winAtStart = false;
+            
+        for (Player eachPlayer : playerArr){
+            eachPlayer.writeDatatoFile("player " + eachPlayer.playerIndex + " initial hand" + eachPlayer.getPlayerHand() + "\n");
+        }
+
+        //before start thread let check to see if there are anyone who win the game immediealty
+        for (Player eachPlayer : playerArr){
+            if (eachPlayer.isWon()){
+                winAtStart = true;
+                break;
+            }
+        }
+        if (!winAtStart){
+            //Began the game
+            startThread();
+        } else{
+            //Write the ending message to all the player, no thread is start, the game is already end
+            for (Player eachPlayer : playerArr){
+                eachPlayer.writeLastLine();
+            }
+        }
+    }
     
-    public static void startThread(){
+    private static void startThread(){
         //To help as with the testing that program is threadsafe we will detect all the uncaught exception in this array (the uncaught exception here are Custom exception class : ConcurrentAccessException)
         ArrayList<Throwable> exceptionList = new ArrayList<>(); 
 
@@ -288,22 +321,21 @@ public class CardGame {
             }
     }
     //Helper function for testing , get all the card in each player hand + all card remain in the deck, to help compare before and after if there are any card lost
-    public static ArrayList<Integer> checkSum(){
+    public static ArrayList<Integer> getAllCard(){
         ArrayList<Integer> allCard = new ArrayList<>();
         for (Player eachPlayer : playerArr){
             for (Card eachCard : eachPlayer.getPlayerCard()){
                 allCard.add(eachCard.getValue());
             }
         }
-
         for (Deck eachDeck : deckArr){
             for (Card eachCard : eachDeck.getCardList()){
                 allCard.add(eachCard.getValue());
             }
         }
-        
         return allCard;
     }
+
     //Interrupt all thread
     public static void interruptAllThread(){
         for (Thread eachThread : threadList){

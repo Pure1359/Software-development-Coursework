@@ -1,2 +1,0 @@
-Player Index : 9 starting hand is : [4, 3, 7, 1]
-Player Index : 8 won the game and has interrupt this thread to stop

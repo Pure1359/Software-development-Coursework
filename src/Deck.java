@@ -7,6 +7,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class Deck {
+    private final int deckIndex;
     //Deck must have lock
     private final ReentrantLock deckLock = new ReentrantLock();
     //Use arraydeque (not inherently thread safe) because deck is FIFO .
@@ -16,11 +17,16 @@ public class Deck {
     private  BufferedWriter writetoFile;
 
     public Deck(int deckIndex, String filepath){
+        this.deckIndex = deckIndex;
         try{
             writetoFile = new BufferedWriter(new FileWriter(filepath));
         } catch (IOException e){
             System.out.println(e.getMessage());
         }
+    }
+    
+    public int getDeckIndex(){
+        return deckIndex;
     }
     
     public boolean tryLock(){
@@ -62,7 +68,7 @@ public class Deck {
         if(CardGame.playerArr.length == 1){
             return;
         }
-        //if some other thread is using this deck, then throw and ConccurrentAccessException
+        //if some other thread is using this deck, then throw ConccurrentAccessException
         //if not set the flag to true (Thread.currentThread() is the only thread that is using this deck)
         if (!inUsed.compareAndSet(false, true)){
             throw new ConcurrentAccessException("Concurrent access Dectected");
@@ -71,9 +77,9 @@ public class Deck {
     //Write the remain deck content for at the end of game
     public void writeDeckContent(){
         try{
-            writetoFile.write("Deck content : ");
+            writetoFile.write("deck" + deckIndex + " contents:");
             for (Card eachCard : cardList){
-                writetoFile.write(eachCard.getValue() + " ");
+                writetoFile.write(" " + eachCard.getValue());
             }
             writetoFile.flush();
             writetoFile.close();

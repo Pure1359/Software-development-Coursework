@@ -32,15 +32,6 @@ public class Player implements Runnable {
 
     @Override
     public void run(){
-        //Write the initial hand to the file first
-        writeDatatoFile("Player Index : " + playerIndex + " starting hand is : " + getPlayerCard()  + "\n");
-        //if won the game immedietly then set the flag of CardGame.whoWon to this player write to file and then return immedieatly 
-        if (isWon()) {
-            CardGame.whoWon = this;
-            System.out.println("Player Index : " + playerIndex + " Win immedieatly");
-            writeDatatoFile("Player Index : " + CardGame.whoWon.playerIndex + " has won the game");
-            return;
-        }
         //This is atomic action Get card from left, discard to right
         while (!Thread.currentThread().isInterrupted()) {
             // Try to acquire both left and right deck by locking left first and then locking right 
@@ -75,11 +66,9 @@ public class Player implements Runnable {
                     }
                     //If you won the game , after some move then set the flag, write to file, release both lock, so that other thread can be interrupted, then break out of while loop
                     if (isWon()) {
-                        CardGame.whoWon = this;
-                        System.out.println("Player Index : " + playerIndex + " Win");
-                        writeDatatoFile("Player Index : " + CardGame.whoWon.playerIndex + " has won the game\n");
                         leftDeck.unlock();
                         rightDeck.unlock();
+                        CardGame.interruptAllThread();
                         break;
                     }
                     //Once we finish with withdrawing and discarding, we can now release both lock
@@ -99,17 +88,26 @@ public class Player implements Runnable {
                           : Otherwise it might look like : Player play : 1 1 1 0 0 0 2 1 1 2 3 4 1 5 and so on, as you can see 3,4,5 are less likely to player early, even in reality they are allow to play
             */            
             try{
-                Thread.sleep(50L);
+                Thread.sleep(30L);
             }  catch (InterruptedException e){
                     Thread.currentThread().interrupt();
             }
+            
         }
-        //This will interrupt a thread that still waiting for a lock in : leftDeck.tryLock() command 
-        CardGame.interruptAllThread();
-        System.out.println("Player Index : " + playerIndex + " thread has stopped");
-        writeDatatoFile("Player Index : " + CardGame.whoWon.playerIndex + " won the game and has interrupt this thread to stop");
-       
+        writeLastLine();
         
+
+    }
+
+    public void writeLastLine(){
+        if (CardGame.whoWon.playerIndex != this.playerIndex){
+            writeDatatoFile("player " + CardGame.whoWon.playerIndex + " has informed player " + this.playerIndex + " that player " + CardGame.whoWon.playerIndex + " has won\n");
+            writeDatatoFile("player " + playerIndex  + " exits" + "\n");
+            writeDatatoFile("player " + playerIndex + " hand:" + getPlayerHand());
+        } else{
+            writeDatatoFile("player " + playerIndex  + " exits" + "\n");
+            writeDatatoFile("player " + playerIndex + " final hand:" + getPlayerHand());
+        }
     }
     //Withdrawn a card from the left deck
     public void withDrawnCard(){
@@ -117,7 +115,7 @@ public class Player implements Runnable {
         // Use pollFirst to return and also remove the card from the queue
         Card topCard = leftDeckCardList.pollFirst();
         playerCard.add(topCard);
-        writeDatatoFile("Player " + playerIndex + " withDrawn a " + topCard.getValue() + " from left deck left deck is now : " + leftDeckCardList + "player hand is : " + playerCard);
+        writeDatatoFile("player " + playerIndex + " draws a " + topCard.getValue() + " from deck " + leftDeck.getDeckIndex() + "\n");
     }
 
     public void discardingCard(){
@@ -126,7 +124,8 @@ public class Player implements Runnable {
         Card differentCard = getDifferCard();
         // From specification we will dispose the card to the bottom of the deck
         rightDeckCardList.addLast(differentCard);
-        writeDatatoFile(" and then discard " + differentCard.getValue() + " to the right deck right deck is now " + rightDeckCardList  + "player hand is : " + playerCard +  "\n");
+        writeDatatoFile("player " + playerIndex + " discards a " + differentCard.getValue() + " to deck " + rightDeck.getDeckIndex() + "\n");
+        writeDatatoFile("player " + playerIndex + " current hand is" + getPlayerHand() + "\n");
     }
 
     // A custom method for writing data to file, this save time so we don't have to keep doing try catch 
@@ -158,9 +157,19 @@ public class Player implements Runnable {
     public Deck getRightDeck(){
         return rightDeck;
     }
-    //return player hand
+    //return player hand in string format
+    public String getPlayerHand(){
+        String message = "";
+
+        for (Card eachCard : playerCard){
+            message += " " + eachCard.getValue();
+        }
+
+        return message;
+    }
+    //get the player hand in arrayList format
     public ArrayList<Card> getPlayerCard(){
-        return this.playerCard;
+        return playerCard;
     }
 
     // Check to see if player contain 4 card  with the same number
@@ -171,6 +180,9 @@ public class Player implements Runnable {
                 return false;
             }
         }
+        CardGame.whoWon = this;
+        System.out.println("player " + playerIndex + " wins");
+        writeDatatoFile("player " + playerIndex + " wins" + "\n");
         return true;
     }
 }

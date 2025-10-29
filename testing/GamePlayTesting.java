@@ -1,4 +1,5 @@
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
@@ -10,25 +11,16 @@ import src.Player;
 import static org.junit.Assert.fail;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 
 public class GamePlayTesting {
-    private CardGame mockCardGame = new CardGame();
-
-    private Player p1;
-    private Player p2;
-    private Player p3;
-    private Player p4;
-    private Player p5;
-
-    private Deck d1;
-    private Deck d2;
-    private Deck d3;
-    private Deck d4;
-    private Deck d5;
+    private static CardGame mockCardGame;
+    private static Player p1, p2, p3, p4, p5;
+    private static Deck d1, d2, d3, d4, d5;
 
     public static void main(String[] args) {
         Result result = JUnitCore.runClasses(GamePlayTesting.class);
@@ -45,8 +37,8 @@ public class GamePlayTesting {
     }
 
 
-    @Before
-    public void setup(){
+    @BeforeClass
+    public static void setup(){
         mockCardGame.startTest(5);
 
         p1 = mockCardGame.playerArr[0];
@@ -65,13 +57,12 @@ public class GamePlayTesting {
     @Test
     //Test to see if 2 or more thread access the same deck at the same time (exception for game with only 1 player)
     public void detectConcurrentAccessTesting(){
-        
         try{
-            mockCardGame.startThread();
+            mockCardGame.InitialDataAndStartThread();
             
         } catch (ConcurrentAccessException c){
             fail("Test Fail : Concurrent acess Dectected");
-        } 
+        }
 
         System.out.println("Test pass for No concurrent access ");
     }
@@ -126,7 +117,7 @@ public class GamePlayTesting {
             //We can check for content if Sort(Original Array) == Sort (after)
             Collections.sort(originalCards);
 
-            ArrayList<Integer> after = mockCardGame.checkSum();
+            ArrayList<Integer> after = mockCardGame.getAllCard();
             Collections.sort(after);
             //If both contain the exact same card value , then no card is lost during the game, or no card appear out of nowhere
             if (after.equals(originalCards)){

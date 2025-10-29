@@ -2,6 +2,8 @@
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
@@ -11,10 +13,12 @@ import src.CardGame;
 import src.Deck;
 import src.Player;
 
-
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayDeque;
-
-
+import java.util.Arrays;
 
 import org.junit.*;
 public class PlayerTest {
@@ -49,9 +53,11 @@ public class PlayerTest {
 
 
     @Before
-    public void setup(){
-        mockCardGame.startTest(5);
+    public void setup() {
 
+        mockCardGame = new CardGame();
+        mockCardGame.startTest(5);
+        
         p1 = mockCardGame.playerArr[0];
         p2 = mockCardGame.playerArr[1];
         p3 = mockCardGame.playerArr[2];
@@ -63,7 +69,11 @@ public class PlayerTest {
         d3 = mockCardGame.deckArr[2];
         d4 = mockCardGame.deckArr[3];
         d5 = mockCardGame.deckArr[4];
+
+    
     }
+
+   
 
     @Test
     public void validDateDeckLocation(){
@@ -141,7 +151,7 @@ public class PlayerTest {
 
     @Test
     public void testPlayerHandLength(){
-        //Start of game must have 4 card
+        //Start of game all player must have 4 card
         assertTrue(p1.getPlayerCard().size() == 4);
         assertTrue(p2.getPlayerCard().size() == 4);
         assertTrue(p3.getPlayerCard().size() == 4);
@@ -153,6 +163,7 @@ public class PlayerTest {
 
     @Test
     public void playerHandContent(){
+        // From inspection we expect that : 
         assertTrue(p1.getPlayerCard().toString().equals("[1, 0, 0, 6]"));
         assertTrue(p2.getPlayerCard().toString().equals("[3, 6, 3, 3]"));
         assertTrue(p3.getPlayerCard().toString().equals("[4, 4, 6, 1]"));
@@ -165,6 +176,7 @@ public class PlayerTest {
 
 
     @Test
+    //Checking for withdrawing card
     public void testWithDrawnCard(){
         Player p1 = mockCardGame.playerArr[0];
         Deck p1LeftDeck = p1.getLeftDeck();
@@ -173,6 +185,14 @@ public class PlayerTest {
         p1.withDrawnCard();
         assertFalse(deckQueue.contains(topCard));
         System.out.println("Test pass for removing top Card");
+
+        try{
+            BufferedReader readFile = new BufferedReader(new FileReader("testing/player1_output.txt"));
+            assertEquals(readFile.readLine(), "player " + p1.playerIndex + " draws a " + topCard.getValue() + " from deck " + p1LeftDeck.getDeckIndex());
+            System.out.println("Test pass for writing withdrawn information to output file pass");
+        } catch (IOException e){
+            fail("Either File is not created for the player or Unexpected Thing happen");
+        }
     }
 
     @Test
@@ -180,13 +200,48 @@ public class PlayerTest {
         Player p1 = mockCardGame.playerArr[1];
         Deck p1rightDeck = p1.getRightDeck();
         ArrayDeque<Card> deckQueue = p1rightDeck.getCardList();
-        //The first card have an undesired value (card value != player Index)
-        Card cardTobeRemoved = p1.getPlayerCard().get(0);
+        //From inspection : The first card have an undesired value (card value != player Index)
+ 
+        Card differCard = new Card(-1);
 
+        for (Card eachCard : p2.getPlayerCard()){
+            if (eachCard.getValue() != p2.playerIndex){
+                differCard = eachCard;
+                break;
+            }
+        }
+    
         //Making sure that the discarding card actually discard the first card in the player hand to the bottom of the right deck or not
         p1.discardingCard();
-        assertEquals(cardTobeRemoved, deckQueue.getLast());
+        assertEquals(differCard, deckQueue.getLast());
         System.out.println("Test for Discarding card to bottom of right deck pass");
+
+        //Test to see if we can write the information about discarding to output
+        try{
+            BufferedReader readFile = new BufferedReader(new FileReader("testing/player2_output.txt"));
+            assertEquals("player " + p2.playerIndex + " discards a " + differCard.getValue() + " to deck " + p2.getRightDeck().getDeckIndex(), readFile.readLine());
+            System.out.println("Test for writing discard to output file pass");
+        } catch (IOException e){
+            fail("Either File is not created for the player or Unexpected Thing");
+        }
+
+        
+    }
+
+    @Test
+    //Check if player hand is still 4 after withdrawn and discard
+    public void testPlayerInvariant(){
+        Player p3 = mockCardGame.playerArr[3];
+
+        p3.withDrawnCard();
+        p3.discardingCard();
+
+        if (p3.getPlayerCard().size() != 4){
+            fail("Player Is not invariants");
+        }
+
+        System.out.println("Test pass for player invariants, player hand contain 4 card after withdraw and discard");
+        System.err.println("If you read this then all test has been passed!");
     }
 
 
