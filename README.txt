@@ -3,8 +3,9 @@ To run test Suite follow this procedure :
 1. Because you are reading this text, i assume that you have already extract the cardsTest.zip
 2. Make sure you are directly under the project root (as usual)
 3. Run command in terminal : 
-    - (Window) java -cp bin;lib/junit-4.13.2.jar;lib/hamcrest-core-1.3.jar org.junit.runner.JUnitCore TestSuite
-    - (Linux)  java -cp bin:lib/junit-4.13.2.jar:lib/hamcrest-core-1.3.jar org.junit.runner.JUnitCore TestSuite
+    - (Window) java -cp "bin;lib/junit-4.13.2.jar;lib/hamcrest-core-1.3.jar" org.junit.runner.JUnitCore TestSuite
+
+    - (Linux)  java -cp "bin:lib/junit-4.13.2.jar:lib/hamcrest-core-1.3.jar" org.junit.runner.JUnitCore TestSuite
 
 For example if you are on Window : (CMD)
 C:\Users\XXX\OneDrive - University of Exeter\Documents\XXX\cardsTest(PROJECT ROOT)>java -cp bin;lib/junit-4.13.2.jar;lib/hamcrest-core-1.3.jar org.junit.runner.JUnitCore TestSuite

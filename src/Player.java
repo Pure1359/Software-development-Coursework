@@ -48,13 +48,13 @@ public class Player implements Runnable {
                     leftDeck.unlock();
                 } else {
                     
-                    //Guard against continuing playing even if someoone is already won
+                    //Guard against continuing playing even if someone is already won
                     if (CardGame.whoWon != null){
                         leftDeck.unlock();
                         rightDeck.unlock();
                         break;
                     }
-                    // Automatically withdrawn from left and discard to right
+                    // Automatically withdrawn from left and discard to right (this is atomic action)
                     this.withDrawnCard();
                     this.discardingCard();
 
@@ -64,7 +64,7 @@ public class Player implements Runnable {
                         rightDeck.unlock();
                         break;
                     }
-                    //If you won the game , after some move then set the flag, write to file, release both lock, so that other thread can be interrupted, then break out of while loop
+                    //If you won the game release both lock, because we will interrupt all thread including those that are blocked (waiting for leftDeck lock)
                     if (isWon()) {
                         leftDeck.unlock();
                         rightDeck.unlock();
@@ -81,6 +81,7 @@ public class Player implements Runnable {
             }
             
             /*
+            Avoid Greedy Player
             * We start a player thread by using for loop which mean that player at the start of playerArr in CardGame are more likely to start playing first
             * For example : Player 1 are very more likely to play first before Player 5
             *             : Player 1 will have more chance to lock their left and right deck again , due to how to the thread scheduler work
@@ -98,13 +99,16 @@ public class Player implements Runnable {
         
 
     }
-
+    //This will write at the end of the last after someone win the game
     public void writeLastLine(){
+        //The line will be different if you are the winner or the loser of the game
+        //If you lose you get : 
         if (CardGame.whoWon.playerIndex != this.playerIndex){
             writeDatatoFile("player " + CardGame.whoWon.playerIndex + " has informed player " + this.playerIndex + " that player " + CardGame.whoWon.playerIndex + " has won\n");
             writeDatatoFile("player " + playerIndex  + " exits" + "\n");
             writeDatatoFile("player " + playerIndex + " hand:" + getPlayerHand());
         } else{
+            //If you win you get ("final hand" instead of "hand") + (no interrupt message)
             writeDatatoFile("player " + playerIndex  + " exits" + "\n");
             writeDatatoFile("player " + playerIndex + " final hand:" + getPlayerHand());
         }
@@ -120,7 +124,7 @@ public class Player implements Runnable {
 
     public void discardingCard(){
         ArrayDeque<Card> rightDeckCardList = rightDeck.getCardList();
-        //Get the number that are not the player preferrence
+        //Get the number that are not the player preference
         Card differentCard = getDifferCard();
         // From specification we will dispose the card to the bottom of the deck
         rightDeckCardList.addLast(differentCard);

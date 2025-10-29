@@ -47,7 +47,7 @@ public class CardGame {
         } while (!validateFile(filename, numberOfPlayer));
 
 
-        myObj.close(); // close the scanenr object
+        myObj.close(); // close the scanner object
         
 
         //From specification we have n deck where n is number of player, i also have n thread , thread/Player
@@ -62,8 +62,8 @@ public class CardGame {
             playerArr[i] = new Player(i + 1, "player" + (i + 1) + "_output.txt");
             threadList[i] = new Thread(playerArr[i]);
         }
-
-        //Specifiying the file name for deck output
+        
+        //Specifying the file name for deck output
         for (int i = 0; i < numberOfPlayer; i++){
             //deck output file name starting from 1 to n.
             deckArr[i] = new Deck(i + 1, "deck" + (i + 1) + "_output.txt");
@@ -117,7 +117,7 @@ public class CardGame {
             logging(playerArr);
             readFile.close();
 
-            //Check if anyone won the game immedieatly and write the initial hand on the first line of the file
+            //Check if anyone won the game immediately and write the initial hand on the first line of the file
             InitialDataAndStartThread();
             
             
@@ -203,7 +203,7 @@ public class CardGame {
             eachPlayer.writeDatatoFile("player " + eachPlayer.playerIndex + " initial hand" + eachPlayer.getPlayerHand() + "\n");
         }
 
-        //before start thread let check to see if there are anyone who win the game immediealty
+        //before start thread let check to see if there are anyone who win the game immediately
         for (Player eachPlayer : playerArr){
             if (eachPlayer.isWon()){
                 winAtStart = true;
@@ -222,7 +222,7 @@ public class CardGame {
     }
     
     private static void startThread(){
-        //To help as with the testing that program is threadsafe we will detect all the uncaught exception in this array (the uncaught exception here are Custom exception class : ConcurrentAccessException)
+        //To help as with the testing that program is thread safe we will detect all the uncaught exception in this array (the uncaught exception here are Custom exception class : ConcurrentAccessException)
         ArrayList<Throwable> exceptionList = new ArrayList<>(); 
 
 
@@ -242,10 +242,10 @@ public class CardGame {
             try {
                 eachThread.join();
             } catch (InterruptedException e){
-                System.out.println("Unexpected behaviour occur!");
+                System.out.println("Unexpected behavior occur!");
             } 
         }
-        //If there are any exception detected we will throw the exception to ther user terminal
+        //If there are any exception detected we will throw the exception to the user terminal
         for (Throwable eachThrowable : exceptionList){
             if (eachThrowable instanceof ConcurrentAccessException){
                 //IF there are only 1 player, then we have only 1 deck, the player left and right deck both refer to the same deck, hence this is the only exception of ConcurrentAccessException
@@ -264,7 +264,7 @@ public class CardGame {
             String read = readFile.readLine();
             int cardAmount = 0;
             while (read != null){
-                //We do not accept "" empty string inbetween the number, start or at end of file
+                //We do not accept "" empty string between the number, start or at end of file
                 if (read.equals("")){
                     System.out.println("Empty line detected. Please remove any extra newlines or whitespace between numbers, or at the end of the file.");
                 }
@@ -283,13 +283,15 @@ public class CardGame {
                 return false;
             }
         //IOException usually for file not existing
-       } catch (IOException e){
+       } catch (FileNotFoundException e){
             System.out.println("No deck found on such path given :" + e.getMessage());
             return false;
-        //Any other issues causing paraseInt will be thrown here
+        //Any other issues causing parseInt will be thrown here
        } catch (NumberFormatException n){
             System.out.println("Invalid content in the deck specified : " + n.getMessage());
             return false;
+       } catch (IOException I){
+            System.out.println("Unexpected IO Operation error occur : " + I.getMessage());
        }
 
        return true;
@@ -310,17 +312,17 @@ public class CardGame {
 
         return true;
     }
-    //Log the start of the round : Initial hand , Initial left and right deck
+    //Log to terminal  the start of the round : Initial hand , Initial left and right deck
     public static void logging(Player[] playerArr){
         for (Player eachPlayer : playerArr){
                 Deck leftDeck = eachPlayer.getLeftDeck();
                 Deck rightDeck = eachPlayer.getRightDeck();
                 ArrayDeque<Card> LeftcardQueue = leftDeck.getCardList();
                 ArrayDeque<Card> RightcardQueue = rightDeck.getCardList();
-                System.out.println("Player index : " + eachPlayer.playerIndex + "initial hand is " + eachPlayer.getPlayerCard() + "left deck = " + LeftcardQueue + " right Deck = " + RightcardQueue);
+                System.out.println("Player index : " + eachPlayer.playerIndex + " initial hand is " + eachPlayer.getPlayerCard() + " left deck = " + LeftcardQueue + " right Deck = " + RightcardQueue);
             }
     }
-    //Helper function for testing , get all the card in each player hand + all card remain in the deck, to help compare before and after if there are any card lost
+    //Helper function for testing , get all the card in each player hand + all card remain in the deck, to help compare before and after the game if there are any card lost
     public static ArrayList<Integer> getAllCard(){
         ArrayList<Integer> allCard = new ArrayList<>();
         for (Player eachPlayer : playerArr){

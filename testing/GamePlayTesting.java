@@ -8,6 +8,8 @@ import src.CardGame;
 import src.ConcurrentAccessException;
 import src.Deck;
 import src.Player;
+
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import java.io.BufferedReader;
 import java.io.File;
@@ -17,10 +19,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 
+
 public class GamePlayTesting {
-    private static CardGame mockCardGame;
-    private static Player p1, p2, p3, p4, p5;
-    private static Deck d1, d2, d3, d4, d5;
+    private  CardGame mockCardGame;
+    private  Player p1, p2, p3, p4, p5;
+    private  Deck d1, d2, d3, d4, d5;
 
     public static void main(String[] args) {
         Result result = JUnitCore.runClasses(GamePlayTesting.class);
@@ -37,8 +40,8 @@ public class GamePlayTesting {
     }
 
 
-    @BeforeClass
-    public static void setup(){
+    @Before
+    public  void setup(){
         mockCardGame.startTest(5);
 
         p1 = mockCardGame.playerArr[0];
@@ -61,10 +64,65 @@ public class GamePlayTesting {
             mockCardGame.InitialDataAndStartThread();
             
         } catch (ConcurrentAccessException c){
-            fail("Test Fail : Concurrent acess Dectected");
+            fail("Test Fail : Concurrent access Detected");
         }
 
         System.out.println("Test pass for No concurrent access ");
+
+    }
+
+    @Test
+    //Check for round robin, from the output file (we already check the actual card content in the PlayerTest)
+    public void playerOutputInitialHandChecking(){
+        //restart the game
+        mockCardGame.InitialDataAndStartThread();
+
+        // Upon inspecting the deckfile we know that initial hand for each player:
+        String[] expectedHands = {
+            "player 1 initial hand 1 0 0 6",
+            "player 2 initial hand 3 6 3 3",
+            "player 3 initial hand 4 4 6 1",
+            "player 4 initial hand 2 2 6 4",
+            "player 5 initial hand 1 1 5 4"
+        };
+
+        for (Player eachPlayer : mockCardGame.playerArr) {
+
+            String fileName = "testing/player" + eachPlayer.playerIndex + "_output.txt";
+
+            try (BufferedReader readFile = new BufferedReader(new FileReader(fileName))) {
+                String actual = readFile.readLine();
+                String expected = expectedHands[eachPlayer.playerIndex - 1]; 
+                assertEquals(expected, actual);
+            
+            } catch (IOException e) {
+
+            }
+        }
+        System.out.println("Test pass for : initial card output file writing");
+    }
+
+    @Test
+    //Check for writing the file correctly or not to deck content after game end
+    public void deckOutputAfterGameEndChecking(){
+        
+        mockCardGame.InitialDataAndStartThread();
+
+        for (Deck eachDeck : mockCardGame.deckArr){
+            String fileName = "testing/deck" + eachDeck.getDeckIndex() + "_output.txt";
+
+            try (BufferedReader readFile = new BufferedReader(new FileReader(fileName))) {
+                String actual = readFile.readLine();
+                //Because the cardlist is in ArrayList format, [n1, n2, n3 ...] we have to change to the file format : deckx contents: n1, n2 ,n3 ,...
+                String expected = "deck" + eachDeck.getDeckIndex() + " contents: " +eachDeck.getCardList().toString().replace("[", "").replace("]", "").replace(",", "");
+                assertEquals(expected, actual);
+
+            } catch (IOException e) {
+
+            }
+        }
+
+        System.out.println("Test pass for : deck content output file content after game end");
     }
 
     @Test 
@@ -119,6 +177,7 @@ public class GamePlayTesting {
 
             ArrayList<Integer> after = mockCardGame.getAllCard();
             Collections.sort(after);
+
             //If both contain the exact same card value , then no card is lost during the game, or no card appear out of nowhere
             if (after.equals(originalCards)){
                 System.out.println("Test pass for : no card lost, total card before and after game is the same");
@@ -128,4 +187,6 @@ public class GamePlayTesting {
         } catch (IOException e) {
         }
     }
+
+    
 }

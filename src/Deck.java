@@ -12,7 +12,7 @@ public class Deck {
     private final ReentrantLock deckLock = new ReentrantLock();
     //Use arraydeque (not inherently thread safe) because deck is FIFO .
     private volatile ArrayDeque<Card> cardList = new ArrayDeque<>();
-    //Use to help detect concurrent access during testing (2 or more thread acess this deck at the same time)
+    //Use to help detect concurrent access during testing (2 or more thread access this deck at the same time)
     private AtomicBoolean inUsed = new AtomicBoolean(false);
     private  BufferedWriter writetoFile;
 
@@ -45,7 +45,7 @@ public class Deck {
     }
 
     public void lockthis() throws InterruptedException{
-        //The thread will never know if someone won the game, if it keep waiting for access to this deck, hence this lock need to be interruptable
+        //The thread will never know if someone won the game, if it keep waiting for access to this deck, hence this lock need to be interruptible
         deckLock.lockInterruptibly();
     }
 
@@ -68,7 +68,7 @@ public class Deck {
         if(CardGame.playerArr.length == 1){
             return;
         }
-        //if some other thread is using this deck, then throw ConccurrentAccessException
+        //if some other thread is using this deck, then throw ConcurrentAccessException
         //if not set the flag to true (Thread.currentThread() is the only thread that is using this deck)
         if (!inUsed.compareAndSet(false, true)){
             throw new ConcurrentAccessException("Concurrent access Dectected");

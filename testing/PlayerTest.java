@@ -14,15 +14,16 @@ import src.Deck;
 import src.Player;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
+
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayDeque;
-import java.util.Arrays;
+
 
 import org.junit.*;
 public class PlayerTest {
     
+
     private CardGame mockCardGame = new CardGame();
     private Player p1;
     private Player p2;
@@ -36,7 +37,7 @@ public class PlayerTest {
     private Deck d4;
     private Deck d5;
 
-
+    
     public static void main(String[] args) {
         Result result = JUnitCore.runClasses(PlayerTest.class);
 
@@ -49,12 +50,13 @@ public class PlayerTest {
         } else{
             System.out.println("Some Test fail!");
         }
-}
+    }
+
 
 
     @Before
+    //Before running each test make sure to set up the player correct first
     public void setup() {
-
         mockCardGame = new CardGame();
         mockCardGame.startTest(5);
         
@@ -72,8 +74,6 @@ public class PlayerTest {
 
     
     }
-
-   
 
     @Test
     public void validDateDeckLocation(){
@@ -138,7 +138,7 @@ public class PlayerTest {
 
     @Test
     public void testDeckContent(){
-        //Check if deck round robin is correct or not
+        //Check if deck round robin is correct or not, from inspection we expect that : 
         assertTrue(d1.getCardList().toString().equals("[0, 3, 1, 2]"));
         assertTrue(d2.getCardList().toString().equals("[0, 5, 6, 4]"));
         assertTrue(d3.getCardList().toString().equals("[4, 6, 0, 0]"));
@@ -220,14 +220,12 @@ public class PlayerTest {
         try{
             BufferedReader readFile = new BufferedReader(new FileReader("testing/player2_output.txt"));
             assertEquals("player " + p2.playerIndex + " discards a " + differCard.getValue() + " to deck " + p2.getRightDeck().getDeckIndex(), readFile.readLine());
-            System.out.println("Test for writing discard to output file pass");
+            System.out.println("Test pass for writing discard to output file");
         } catch (IOException e){
             fail("Either File is not created for the player or Unexpected Thing");
         }
-
-        
-    }
-
+   
+    } 
     @Test
     //Check if player hand is still 4 after withdrawn and discard
     public void testPlayerInvariant(){
@@ -241,7 +239,6 @@ public class PlayerTest {
         }
 
         System.out.println("Test pass for player invariants, player hand contain 4 card after withdraw and discard");
-        System.err.println("If you read this then all test has been passed!");
     }
 
 
