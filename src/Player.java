@@ -13,7 +13,7 @@ public class Player implements Runnable {
     private  BufferedWriter writetoFile;
     ArrayList<Card> playerCard = new ArrayList<>();
 
-    // Constructor , specifying playerIndex and filepath
+    // Constructor , specifying playerIndex and output filepath
     public Player(int playerIndex, String filepath){
         this.playerIndex = playerIndex;
         try {
@@ -32,26 +32,29 @@ public class Player implements Runnable {
 
     @Override
     public void run(){
-        //This is atomic action Get card from left, discard to right
+        //Perform atomic action
         while (!Thread.currentThread().isInterrupted()) {
-            // Try to acquire both left and right deck by locking left first and then locking right 
+            //We are using same lock ordering, lock left first then lock right
             try{
                 leftDeck.lockthis();
+                //lockthis() will call the re-entrant lock of leftdeck to lockInterruptibly() which is interruptible lock
             } catch (InterruptedException e){
+                //When any player win, they will call CardGame.interruptAllThread() 
+                //lockThis() will throw interruptedException, when the thread is in Blocked State and is interrupted via CardGame.InterruptAllThread()
                 break;
             }
+            //Right deck must use try lock, if right deck use lockthis(), deadlock will happen sooner or later.
+            //Right deck if use lockthis(), will mean that the left deck will still be locked in the mean time, disrupting the flow of the game
             if (rightDeck.tryLock()) {
-                
+               
                 //If leftdeck is empty we must release both left and right deck to avoid dead lock.
                 if (leftDeck.isEmpty()) {
+                    
                     rightDeck.unlock();
                     leftDeck.unlock();
-                } else {
-                    
-                    //Guard against continuing playing even if someone is already won
+                } else { 
+                    //Guard against making move when if someone is already won
                     if (CardGame.whoWon != null){
-                        leftDeck.unlock();
-                        rightDeck.unlock();
                         break;
                     }
                     // Automatically withdrawn from left and discard to right (this is atomic action)
@@ -60,46 +63,38 @@ public class Player implements Runnable {
 
                     //Another guard to avoid registering the move played if someone have already won the game
                     if (CardGame.whoWon != null){
-                        leftDeck.unlock();
-                        rightDeck.unlock();
                         break;
                     }
-                    //If you won the game release both lock, because we will interrupt all thread including those that are blocked (waiting for leftDeck lock)
+                    //If you won the game we will interrupt all thread including those that are blocked (waiting for leftDeck lock)
                     if (isWon()) {
-                        leftDeck.unlock();
-                        rightDeck.unlock();
                         CardGame.interruptAllThread();
                         break;
                     }
-                    //Once we finish with withdrawing and discarding, we can now release both lock
+                    //if all goes well with withdrawing and discarding, we can now release both lock
                     leftDeck.unlock();
                     rightDeck.unlock();
                 }
             } else {
-                // If we can not lock the right deck, we release the left deck, this reduce change of dead lock , as we are not locking the left deck forever (read more in report)
+                // If we can not lock the right deck, we release the left deck, we do not want to hold the left deck while waiting for right deck to be release as it can cause dead lock
                 leftDeck.unlock();
             }
             
             /*
             Avoid Greedy Player
-            * We start a player thread by using for loop which mean that player at the start of playerArr in CardGame are more likely to start playing first
-            * For example : Player 1 are very more likely to play first before Player 5
-            *             : Player 1 will have more chance to lock their left and right deck again , due to how to the thread scheduler work
-            *             : To make sure player 3 , 4, 5, have more chance to play evenly we can use time out, so that there is a time, where other thread may join
-                          : Otherwise it might look like : Player play : 1 1 1 0 0 0 2 1 1 2 3 4 1 5 and so on, as you can see 3,4,5 are less likely to player early, even in reality they are allow to play
+            Read more in Report
             */            
             try{
                 Thread.sleep(30L);
             }  catch (InterruptedException e){
-                    Thread.currentThread().interrupt();
+                break;
             }
-            
         }
+        //When we break out of the while loop, or Thread.isInterrupted is True we know that someone has won
+        //Our last job is to write the very ending of each player output file
         writeLastLine();
-        
-
+       
     }
-    //This will write at the end of the last after someone win the game
+
     public void writeLastLine(){
         //The line will be different if you are the winner or the loser of the game
         //If you lose you get : 
@@ -119,6 +114,7 @@ public class Player implements Runnable {
         // Use pollFirst to return and also remove the card from the queue
         Card topCard = leftDeckCardList.pollFirst();
         playerCard.add(topCard);
+        //log action to the output file
         writeDatatoFile("player " + playerIndex + " draws a " + topCard.getValue() + " from deck " + leftDeck.getDeckIndex() + "\n");
     }
 
@@ -128,6 +124,7 @@ public class Player implements Runnable {
         Card differentCard = getDifferCard();
         // From specification we will dispose the card to the bottom of the deck
         rightDeckCardList.addLast(differentCard);
+        //log the action
         writeDatatoFile("player " + playerIndex + " discards a " + differentCard.getValue() + " to deck " + rightDeck.getDeckIndex() + "\n");
         writeDatatoFile("player " + playerIndex + " current hand is" + getPlayerHand() + "\n");
     }
@@ -142,7 +139,7 @@ public class Player implements Runnable {
         }
     }
 
-    // Return and remove a card from player hand, such that a card is undesirable for player
+    // Return and remove a card from player hand, such that the card number != player preferred denomination
     private Card getDifferCard(){
         for (Card eachCard : playerCard){
             if (eachCard.getValue() != playerIndex){
@@ -157,21 +154,22 @@ public class Player implements Runnable {
     public Deck getLeftDeck(){
         return leftDeck;
     }
-  
     public Deck getRightDeck(){
         return rightDeck;
     }
+
     //return player hand in string format
+    //Use for logging the player hand after each atomic withdraw and discard move
     public String getPlayerHand(){
         String message = "";
 
         for (Card eachCard : playerCard){
             message += " " + eachCard.getValue();
         }
-
         return message;
     }
-    //get the player hand in arrayList format
+
+    //get the player hand in arrayList format, use for the initialization of the game, by add card to player hand (round robin)
     public ArrayList<Card> getPlayerCard(){
         return playerCard;
     }
@@ -184,6 +182,7 @@ public class Player implements Runnable {
                 return false;
             }
         }
+        //If you won then set volatile flag:
         CardGame.whoWon = this;
         System.out.println("player " + playerIndex + " wins");
         writeDatatoFile("player " + playerIndex + " wins" + "\n");

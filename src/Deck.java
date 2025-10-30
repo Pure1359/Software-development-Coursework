@@ -8,29 +8,34 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class Deck {
     private final int deckIndex;
-    //Deck must have lock
+    //Use Reentrantlock for each deck
     private final ReentrantLock deckLock = new ReentrantLock();
-    //Use arraydeque (not inherently thread safe) because deck is FIFO .
+    //Use ArrayDeque (not thread safe) simplify production code and allow easy adding to top and discard to bottom
     private volatile ArrayDeque<Card> cardList = new ArrayDeque<>();
     //Use to help detect concurrent access during testing (2 or more thread access this deck at the same time)
     private AtomicBoolean inUsed = new AtomicBoolean(false);
+
     private  BufferedWriter writetoFile;
 
     public Deck(int deckIndex, String filepath){
+        //Set the deckIndex
         this.deckIndex = deckIndex;
         try{
+            //Create a new file 
             writetoFile = new BufferedWriter(new FileWriter(filepath));
         } catch (IOException e){
             System.out.println(e.getMessage());
         }
     }
-    
+    //Getter
     public int getDeckIndex(){
         return deckIndex;
     }
-    
+    //Try lock method : If can gain : return true and then gain lock
+    //                  If not then : return false, and stop attempting to gain lock (no blocked state)
     public boolean tryLock(){
-        if(deckLock.tryLock()){       
+        if(deckLock.tryLock()){  
+            //Check if there are any other thread accessing this same deck     
             detectConcurrentAccess();
             return true;
         } else{
@@ -39,18 +44,19 @@ public class Deck {
     }
 
     public void unlock(){
-        // Very important we must set the flag to false before unlock, otherwise if we set the flag after unlock, might get fake result suggesting concurrent access occur even if it not.
+        // Very important we must set the flag to false before unlock, if not then calling unlock first allow other thread to access this deck before setting inUsed to false
+        // This is not really a ConcurrentAccess error, but the detectConcurrentAccess() will flag this as error when in reality it is not
         inUsed.set(false);
         deckLock.unlock();
+        
     }
 
     public void lockthis() throws InterruptedException{
-        //The thread will never know if someone won the game, if it keep waiting for access to this deck, hence this lock need to be interruptible
+        //The thread will never know if someone won the game, if it keep blocked for access to this deck, hence this lock need to be interruptible
         deckLock.lockInterruptibly();
+        detectConcurrentAccess();
     }
-
-    
-    
+    //Use for receiving the card on the initialization (round robin card distribution the deck)
     public void receiveCard(Card inputCard){
         cardList.addLast(inputCard);
     }
@@ -58,7 +64,7 @@ public class Deck {
     public ArrayDeque<Card> getCardList(){
         return cardList;
     }
-
+    //Check if deck is empty or not (help prevent dead lock, see player thread run method)
     public boolean isEmpty(){
         return (cardList.isEmpty());
     }

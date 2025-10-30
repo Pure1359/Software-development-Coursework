@@ -109,17 +109,17 @@ public class PlayerTest {
     public void testDeckAssigning(){
         //Checking if we follow the convention that player Index i left deck is i - 1 and right deck is i, except for first player, as player player left deck is deck nth
         
-        assertEquals(p1.getLeftDeck(), d5);
-        assertEquals(p2.getLeftDeck(), d1);
-        assertEquals(p3.getLeftDeck(), d2);
-        assertEquals(p4.getLeftDeck(), d3);
-        assertEquals(p5.getLeftDeck(), d4);
+        assertEquals(p1.getLeftDeck(), d1);
+        assertEquals(p2.getLeftDeck(), d2);
+        assertEquals(p3.getLeftDeck(), d3);
+        assertEquals(p4.getLeftDeck(), d4);
+        assertEquals(p5.getLeftDeck(), d5);
 
-        assertEquals(p1.getRightDeck(), d1);
-        assertEquals(p2.getRightDeck(), d2);
-        assertEquals(p3.getRightDeck(), d3);
-        assertEquals(p4.getRightDeck(), d4);
-        assertEquals(p5.getRightDeck(), d5);
+        assertEquals(p1.getRightDeck(), d2);
+        assertEquals(p2.getRightDeck(), d3);
+        assertEquals(p3.getRightDeck(), d4);
+        assertEquals(p4.getRightDeck(), d5);
+        assertEquals(p5.getRightDeck(), d1);
 
         System.out.println("Test pass for left and right deck assigning");
     }

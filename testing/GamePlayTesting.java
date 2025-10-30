@@ -15,6 +15,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,7 +25,6 @@ public class GamePlayTesting {
     private  CardGame mockCardGame;
     private  Player p1, p2, p3, p4, p5;
     private  Deck d1, d2, d3, d4, d5;
-
     public static void main(String[] args) {
         Result result = JUnitCore.runClasses(GamePlayTesting.class);
 
@@ -38,10 +38,9 @@ public class GamePlayTesting {
             System.out.println("Some Test fail!");
         }
     }
-
-
     @Before
     public  void setup(){
+        mockCardGame.whoWon = null;
         mockCardGame.startTest(5);
 
         p1 = mockCardGame.playerArr[0];
@@ -56,19 +55,15 @@ public class GamePlayTesting {
         d4 = mockCardGame.deckArr[3];
         d5 = mockCardGame.deckArr[4];
     }
-
     @Test
     //Test to see if 2 or more thread access the same deck at the same time (exception for game with only 1 player)
     public void detectConcurrentAccessTesting(){
         try{
             mockCardGame.InitialDataAndStartThread();
-            
         } catch (ConcurrentAccessException c){
             fail("Test Fail : Concurrent access Detected");
         }
-
         System.out.println("Test pass for No concurrent access ");
-
     }
 
     @Test
@@ -105,12 +100,13 @@ public class GamePlayTesting {
     @Test
     //Check for writing the file correctly or not to deck content after game end
     public void deckOutputAfterGameEndChecking(){
-        
         mockCardGame.InitialDataAndStartThread();
-
+    
+        for (Deck eachDeck : mockCardGame.deckArr){
+            eachDeck.writeDeckContent();
+        }
         for (Deck eachDeck : mockCardGame.deckArr){
             String fileName = "testing/deck" + eachDeck.getDeckIndex() + "_output.txt";
-
             try (BufferedReader readFile = new BufferedReader(new FileReader(fileName))) {
                 String actual = readFile.readLine();
                 //Because the cardlist is in ArrayList format, [n1, n2, n3 ...] we have to change to the file format : deckx contents: n1, n2 ,n3 ,...
@@ -118,7 +114,6 @@ public class GamePlayTesting {
                 assertEquals(expected, actual);
 
             } catch (IOException e) {
-
             }
         }
 
@@ -155,8 +150,6 @@ public class GamePlayTesting {
         }
 
         System.out.println("Test pass for checkDeckFileExists");
-
-
     }
 
     @Test
@@ -169,7 +162,7 @@ public class GamePlayTesting {
             BufferedReader readData = new BufferedReader(new FileReader("testing/deckTest.txt"));
             String content = readData.readLine();
             while (content != null){
-                 originalCards.add((int) Integer.parseInt(content));
+                originalCards.add((int) Integer.parseInt(content));
                 content = readData.readLine();
             }
             //We can check for content if Sort(Original Array) == Sort (after)
@@ -187,6 +180,4 @@ public class GamePlayTesting {
         } catch (IOException e) {
         }
     }
-
-    
 }

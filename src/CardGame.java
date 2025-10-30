@@ -6,13 +6,13 @@ import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Scanner;
+import javax.management.RuntimeErrorException;
 
 public class CardGame {
     // Each player need to know the most up to date fresh version of whoWon in order to stop playing the game fast enough
     // Hence we use volatile
     public static volatile  Player whoWon = null;
-
-    
+    //Use array to store deck player thread, as there are fix number of them
     public static Player[] playerArr = null;
     public static Deck[] deckArr = null;
     public static Thread[] threadList = null;
@@ -23,7 +23,7 @@ public class CardGame {
     }
 
     public static void startGame(){
-        //numString will be convert to int, later, we need it to be in string first so that we can validate and parse the input
+        //numString will be convert to int later, we need it to be in string first so that we can validate and parse the input
         String numString;
         //filename for deck
         String filename;
@@ -46,17 +46,17 @@ public class CardGame {
             filename = myObj.nextLine();  // Read user input  
         } while (!validateFile(filename, numberOfPlayer));
 
-
         myObj.close(); // close the scanner object
         
-
-        //From specification we have n deck where n is number of player, i also have n thread , thread/Player
+        //From specification we have n deck
+        //n player
+        //n player mean n threads
         playerArr = new Player[numberOfPlayer];
         threadList = new Thread[numberOfPlayer];
         deckArr = new Deck[numberOfPlayer];
 
         
-        //Each player implement runnable, that is why we can do threadlist = new Thread(playerArr[i])
+        //Each player implement runnable, we can pass the player object to thread constructor
         for (int i = 0; i < numberOfPlayer; i++) {
             //Specifying the index of player, and the output file name (starting from 1 to n)
             playerArr[i] = new Player(i + 1, "player" + (i + 1) + "_output.txt");
@@ -69,67 +69,18 @@ public class CardGame {
             deckArr[i] = new Deck(i + 1, "deck" + (i + 1) + "_output.txt");
         }
 
-        //This is part of design to avoid deadlock (see more in report) , For all player Index = i, their leftdeck is i -1 and rightdeck is i
-        //If the player is the first person , then deck need to be loop around so leftdeck is at deckArr[numberOfplayer - 1]
-        for (int i = 0; i < numberOfPlayer; i++) {
-            Player player = playerArr[i];
-            if (i == 0) {
-                player.setLeftDeck(deckArr[numberOfPlayer - 1]);
-                player.setRightDeck(deckArr[i]);
-            } else {
-                player.setLeftDeck(deckArr[i - 1]);
-                player.setRightDeck(deckArr[i]);
-            }
+        //Begin round robin card assigning and deck assigning to the player
+        roundRobin(numberOfPlayer, filename);
+
+         //Display the initial information about the player.
+        logging(playerArr);
+        //write the initial hand on the first line of the file and then check if anyone won the game immediately
+        InitialDataAndStartThread();
+
+        //after game end we write to deck output file the remaining deck content
+        for (Deck eachDeck : deckArr){
+            eachDeck.writeDeckContent();
         }
-
-        //began round robin distribution of card to player
-        try {
-            BufferedReader readFile = new BufferedReader(new FileReader(filename));
-            
-           
-            String read = readFile.readLine();
-            //In reality the player index range is from 1 to n, however we start at 0 so that modding operation remain easy
-            //The output file for the player will be using the correct value of player (1 - n)
-            //This labelling is also applied to deck
-            int playerIndex = 0;
-            int deckIndex = 0;
-            int cardTaken = 0;
-
-
-            while (read != null){
-                if (cardTaken < 4 * numberOfPlayer){
-                    // Use modding operation for loop around after reaching the last player (to ensure round robin)
-                    playerIndex = playerIndex % numberOfPlayer;
-                    playerArr[playerIndex].getPlayerCard().add(new Card(Integer.parseInt(read)));
-                    playerIndex++;
-                    cardTaken++;
-                } else{
-                    //if all player hand are full we can then start distributing the card to deck in round robin
-                    // Use modding operation for loop around after reaching the last deck (to ensure round robin)
-                    deckIndex = deckIndex % numberOfPlayer;
-                    deckArr[deckIndex].receiveCard(new Card(Integer.parseInt(read)));
-                    deckIndex++;
-                }
-            
-                read = readFile.readLine();
-            }
-            //Display the initial information about the player.
-            logging(playerArr);
-            readFile.close();
-
-            //Check if anyone won the game immediately and write the initial hand on the first line of the file
-            InitialDataAndStartThread();
-            
-            
-            //after game end we write to file the remaining deck content
-            for (Deck eachDeck : deckArr){
-                eachDeck.writeDeckContent();
-            }
-
-        } catch (IOException e){
-            System.out.println(e.getMessage());
-        }
-
         
     }
 
@@ -147,62 +98,16 @@ public class CardGame {
         for (int i = 0; i < numsPlayer; i++){
             deckArr[i] = new Deck(i + 1, "testing/deck" + (i + 1) + "_output.txt");
         }
-        //assign left and right deck as usual
-        for (int i = 0; i < numsPlayer; i++) {
-            Player player = playerArr[i];
-            if (i == 0) {
-                player.setLeftDeck(deckArr[numsPlayer - 1]);
-                player.setRightDeck(deckArr[i]);
-            } else {
-                player.setLeftDeck(deckArr[i - 1]);
-                player.setRightDeck(deckArr[i]);
-            }
-        }
-
-        //Round robin distribution to player
-        try {
-            BufferedReader readFile = new BufferedReader(new FileReader("testing/deckTest.txt"));
-            
-            // begin round robin distribution to the player, same logic as in startGame
-            String read = readFile.readLine();
-
-            int playerIndex = 0;
-            int deckIndex = 0;
-            int cardTaken = 0;
-
-            while (read != null){
-            if (cardTaken < 4 * numsPlayer){
-                playerIndex = playerIndex % numsPlayer;
-                playerArr[playerIndex].getPlayerCard().add(new Card(Integer.parseInt(read)));
-                playerIndex++;
-                cardTaken++;
-            } else{
-                deckIndex = deckIndex % numsPlayer;
-                deckArr[deckIndex].receiveCard(new Card(Integer.parseInt(read)));
-                deckIndex++;
-            }
-            
-            read = readFile.readLine();
-
-            }
-            readFile.close();
-            
-            for (Deck eachDeck : deckArr){
-                eachDeck.writeDeckContent();
-            }
-
-        } catch(IOException e){
-
-        }
+        roundRobin(numsPlayer, "testing/deckTest.txt");
     }
 
+    
     public static void InitialDataAndStartThread(){
         boolean winAtStart = false;
-            
+        //write the starting hand of each player to the output player file
         for (Player eachPlayer : playerArr){
             eachPlayer.writeDatatoFile("player " + eachPlayer.playerIndex + " initial hand" + eachPlayer.getPlayerHand() + "\n");
         }
-
         //before start thread let check to see if there are anyone who win the game immediately
         for (Player eachPlayer : playerArr){
             if (eachPlayer.isWon()){
@@ -220,40 +125,93 @@ public class CardGame {
             }
         }
     }
+    //Round robin deck assigning to each player and round robin card distribution to deck and player hand
+    private static void roundRobin(int numsPlayer, String filename){
+        //Assign the left and right deck to form ring topology
+        //For Player index if index == totalNumOfPlayer then Left deck index is totalNumofplayer and right deck index is 1
+        //For  index < totalNumOfPlayer : left deck index is i and right deck index is i + 1
+        for (int i = 0; i < numsPlayer; i++) {
+            Player player = playerArr[i];
+            // a deck that got index = totalNumOfPlayer locate at deckArr[totalNumOfPlayer - 1]
+            if (i == numsPlayer - 1) {
+                player.setLeftDeck(deckArr[numsPlayer - 1]);
+                player.setRightDeck(deckArr[0]);
+            } else {
+                player.setLeftDeck(deckArr[i]);
+                player.setRightDeck(deckArr[i + 1]);
+            }
+        }
+        //began round robin distribution of card to player and deck
+        try {
+            BufferedReader readFile = new BufferedReader(new FileReader(filename));
+            String read = readFile.readLine();
+            //In reality the player index range is from 1 to n, however we start at 0 so that modding operation remain easy
+            //The output file for the player will be using the correct value of player
+            //This labelling is also applied to deck
+            int playerIndex = 0;
+            int deckIndex = 0;
+            int cardTaken = 0;
+            while (read != null){
+                if (cardTaken < 4 * numsPlayer){
+                    // Use modding operation for loop around after reaching the last player (to ensure round robin)
+                    playerIndex = playerIndex % numsPlayer;
+                    playerArr[playerIndex].getPlayerCard().add(new Card(Integer.parseInt(read)));
+                    playerIndex++;
+                    cardTaken++;
+                } else{
+                    //if all player hand are full we can then start distributing the card to deck in round robin
+                    // Use modding operation for loop around after reaching the last deck (to ensure round robin)
+                    deckIndex = deckIndex % numsPlayer;
+                    deckArr[deckIndex].receiveCard(new Card(Integer.parseInt(read)));
+                    deckIndex++;
+                }
+            
+                read = readFile.readLine();
+            }
+            readFile.close();
+        } catch (IOException e){
+            System.out.println(e.getMessage());
+        }
+    }
     
+    //Start the game
     private static void startThread(){
-        //To help as with the testing that program is thread safe we will detect all the uncaught exception in this array (the uncaught exception here are Custom exception class : ConcurrentAccessException)
-        ArrayList<Throwable> exceptionList = new ArrayList<>(); 
-
+        //exception list to contain all the uncaughtException
+        ArrayList<Throwable> exceptionList = new ArrayList<>();
 
         for (Thread eachThread : threadList){
-                eachThread.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
-                    @Override
-                    //When the thread throw an uncaugtexception we interrupt all the thread (this will never happen because the player and deck class is thread-safe)
-                    public void uncaughtException(Thread thisThread, Throwable RunTimeError) {
-                        exceptionList.add(RunTimeError);
-                        interruptAllThread();
-                    }
-                    
-                });
-                eachThread.start();
+            //If an UncaughtException escape eachThread then : we add it to list
+            eachThread.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+                @Override
+                public void uncaughtException(Thread thisThread, Throwable RunTimeError) {
+                    //Uncaught exception is undesired behavior, we will stop the game immediately (This should never happen , as the code have been tested)
+                    exceptionList.add(RunTimeError);
+                    interruptAllThread();
+                }
+            });
+            //Start each player
+            eachThread.start();
         }
         for (Thread eachThread : threadList){
             try {
+                //Wait until all player exit the game before continuing
                 eachThread.join();
             } catch (InterruptedException e){
                 System.out.println("Unexpected behavior occur!");
             } 
         }
-        //If there are any exception detected we will throw the exception to the user terminal
+        
         for (Throwable eachThrowable : exceptionList){
-            if (eachThrowable instanceof ConcurrentAccessException){
-                //IF there are only 1 player, then we have only 1 deck, the player left and right deck both refer to the same deck, hence this is the only exception of ConcurrentAccessException
+            //If there are only 1 player playing the game, then their left and right deck reference the same deck object
+            //It is expected that 1 player will access same deck at the same time
+            if (eachThrowable instanceof ConcurrentAccessException){        
                 if (playerArr.length == 1){
+                    //Ignore in case of 1 player only
                     break;
                 }
-                //If there are more than 1 player throw, this error to indicate that the program is not thread safe (this wil never happen as the program is thread safe)
                 throw new ConcurrentAccessException("Concurrent Access Detected!");
+            } else{
+                throw new RuntimeErrorException(null, "Some other error happen need Fix!");
             }
         }     
     }
@@ -269,8 +227,8 @@ public class CardGame {
                     System.out.println("Empty line detected. Please remove any extra newlines or whitespace between numbers, or at the end of the file.");
                 }
                 int value = Integer.parseInt(read);
-                // From specification we do not accept card that have negative value 
-                if (value >= 0){
+                // From specification we do not accept card that have negative value or zero
+                if (value > 0){
                     cardAmount++;
                     read = readFile.readLine();
                 } else{
@@ -279,7 +237,7 @@ public class CardGame {
             }
             // From specification we invalidate deck that contain not 8n card
             if (cardAmount != playerAmount * 8){
-                System.out.println("Invalid amount of card is not valid for " + playerAmount + " amount of players");
+                System.out.println("Invalid amount of card is not valid for " + playerAmount + " amount of card expect : " + playerAmount * 8 + " got " + cardAmount + " instead");
                 return false;
             }
         //IOException usually for file not existing
@@ -293,23 +251,22 @@ public class CardGame {
        } catch (IOException I){
             System.out.println("Unexpected IO Operation error occur : " + I.getMessage());
        }
-
        return true;
-
     }
     //We validate the string of player number
     public static boolean validateNumberOfPlayer(String numString){
         try{
+            // No less than 0 player
             int tempN = Integer.parseInt(numString);
             if (tempN <= 0){
                 System.out.println("Invalid Number of player, must be > 0");
                 return false;
             }
         } catch (NumberFormatException n){
+            //Can't parse int error
             System.out.println("Invalid number input : " + n.getMessage());
             return false;
         }
-
         return true;
     }
     //Log to terminal  the start of the round : Initial hand , Initial left and right deck
@@ -337,7 +294,6 @@ public class CardGame {
         }
         return allCard;
     }
-
     //Interrupt all thread
     public static void interruptAllThread(){
         for (Thread eachThread : threadList){
