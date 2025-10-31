@@ -1,4 +1,4 @@
-package src;
+
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -17,9 +17,7 @@ public class CardGame {
     public static Deck[] deckArr = null;
     public static Thread[] threadList = null;
     public static void main(String[] args) {
-
-        startGame();
-        
+        startGame();  
     }
 
     public static void startGame(){
@@ -184,7 +182,8 @@ public class CardGame {
             eachThread.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
                 @Override
                 public void uncaughtException(Thread thisThread, Throwable RunTimeError) {
-                    //Uncaught exception is undesired behavior, we will stop the game immediately (This should never happen , as the code have been tested)
+                    //Uncaught exception is undesired behavior
+                    // we will stop the game immediately (This should never happen , as the code have been tested)
                     exceptionList.add(RunTimeError);
                     interruptAllThread();
                 }
@@ -232,12 +231,12 @@ public class CardGame {
                     cardAmount++;
                     read = readFile.readLine();
                 } else{
-                    throw new NumberFormatException("Negative value detected");
+                    throw new NumberFormatException("Invalid value detected need to be > 0, got " + value + " instead");
                 }
             }
             // From specification we invalidate deck that contain not 8n card
             if (cardAmount != playerAmount * 8){
-                System.out.println("Invalid amount of card is not valid for " + playerAmount + " amount of card expect : " + playerAmount * 8 + " got " + cardAmount + " instead");
+                System.out.println("Invalid amount of card for " + playerAmount + " player, the amount of card expected is : " + playerAmount * 8 + " but got " + cardAmount + " instead");
                 return false;
             }
         //IOException usually for file not existing

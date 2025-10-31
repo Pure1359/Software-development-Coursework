@@ -8,11 +8,6 @@ import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
 
-import src.Card;
-import src.CardGame;
-import src.Deck;
-import src.Player;
-
 import java.io.BufferedReader;
 
 import java.io.FileReader;
@@ -55,7 +50,7 @@ public class PlayerTest {
 
 
     @Before
-    //Before running each test make sure to set up the player correct first
+    //Before running each test make sure to set up the player correctly first
     public void setup() {
         mockCardGame = new CardGame();
         mockCardGame.startTest(5);
@@ -71,8 +66,6 @@ public class PlayerTest {
         d3 = mockCardGame.deckArr[2];
         d4 = mockCardGame.deckArr[3];
         d5 = mockCardGame.deckArr[4];
-
-    
     }
 
     @Test
@@ -88,8 +81,7 @@ public class PlayerTest {
         assertFalse(mockCardGame.validateFile("testing/invalidDeck2.txt", 5));
         assertFalse(mockCardGame.validateFile("testing/invalidDeck3.txt", 5));
         assertFalse(mockCardGame.validateFile("testing/invalidDeck4.txt", 5));
-        assertFalse(mockCardGame.validateFile("testing/invalidDeck4.txt", 5));
-        
+        assertFalse(mockCardGame.validateFile("testing/invalidDeck5.txt", 5));
        
         
         System.out.println("Test pass for validate content of deck file");
@@ -200,10 +192,9 @@ public class PlayerTest {
         Player p1 = mockCardGame.playerArr[1];
         Deck p1rightDeck = p1.getRightDeck();
         ArrayDeque<Card> deckQueue = p1rightDeck.getCardList();
-        //From inspection : The first card have an undesired value (card value != player Index)
- 
+        
         Card differCard = new Card(-1);
-
+        //Get the card that are not wanted for player
         for (Card eachCard : p2.getPlayerCard()){
             if (eachCard.getValue() != p2.playerIndex){
                 differCard = eachCard;
@@ -240,9 +231,5 @@ public class PlayerTest {
 
         System.out.println("Test pass for player invariants, player hand contain 4 card after withdraw and discard");
     }
-
-
-
-
     
 }

@@ -1,14 +1,8 @@
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
-import src.CardGame;
-import src.ConcurrentAccessException;
-import src.Deck;
-import src.Player;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import java.io.BufferedReader;
@@ -17,6 +11,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.nio.Buffer;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -72,7 +67,7 @@ public class GamePlayTesting {
         //restart the game
         mockCardGame.InitialDataAndStartThread();
 
-        // Upon inspecting the deckfile we know that initial hand for each player:
+        // Upon inspecting the deckfile we work out that actual initial hand for each player:
         String[] expectedHands = {
             "player 1 initial hand 1 0 0 6",
             "player 2 initial hand 3 6 3 3",
@@ -80,7 +75,7 @@ public class GamePlayTesting {
             "player 4 initial hand 2 2 6 4",
             "player 5 initial hand 1 1 5 4"
         };
-
+        
         for (Player eachPlayer : mockCardGame.playerArr) {
 
             String fileName = "testing/player" + eachPlayer.playerIndex + "_output.txt";
@@ -96,6 +91,36 @@ public class GamePlayTesting {
         }
         System.out.println("Test pass for : initial card output file writing");
     }
+
+    
+    @Test
+    //Test to see if the written data to the output about the final hand contain the correct card number 
+    public void playerOutputAfterGameEnd(){
+        mockCardGame.InitialDataAndStartThread();
+
+        for (Player eachPlayer : mockCardGame.playerArr){
+            String filename = "testing/player" + eachPlayer.playerIndex + "_output.txt";
+            String lastLine = null; 
+            String currentLine;
+            try(BufferedReader readFile = new BufferedReader(new FileReader(filename))){
+                while ((currentLine = readFile.readLine()) != null){
+                    lastLine = currentLine;
+                }
+                if (eachPlayer.playerIndex != mockCardGame.whoWon.playerIndex){
+                    String actual = "player " + eachPlayer.playerIndex + " hand:" + eachPlayer.getPlayerHand();
+                    assertEquals(lastLine, actual);
+                } else{
+                    String actual = "player " + eachPlayer.playerIndex + " final hand:" + eachPlayer.getPlayerHand();
+                    assertEquals(lastLine, actual);
+                }
+
+            } catch (IOException e){
+
+            }
+        }
+        System.out.println("Test pass for : Each player output final hand");
+    }
+
 
     @Test
     //Check for writing the file correctly or not to deck content after game end
@@ -154,7 +179,6 @@ public class GamePlayTesting {
 
     @Test
     //To make sure that thread safe can do this checking the Total Card before game start == Total Card left after game start 
-    //(Read more in report)
     public void noCardLost(){
         ArrayList<Integer> originalCards = new ArrayList<>();
 

@@ -1,4 +1,4 @@
-package src;
+
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -49,7 +49,6 @@ public class Player implements Runnable {
                
                 //If leftdeck is empty we must release both left and right deck to avoid dead lock.
                 if (leftDeck.isEmpty()) {
-                    
                     rightDeck.unlock();
                     leftDeck.unlock();
                 } else { 

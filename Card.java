@@ -1,4 +1,4 @@
-package src;
+
 public class Card {
     private final int value; // The face value of the card
 
