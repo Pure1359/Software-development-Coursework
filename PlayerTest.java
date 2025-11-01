@@ -90,6 +90,7 @@ public class PlayerTest {
 
     @Test
     public void validDatePlayerNumbers(){
+        
         System.out.println("Began Testing for Invalid Number of Player");
 
         assertFalse(mockCardGame.validateNumberOfPlayer("-6"));
@@ -97,7 +98,7 @@ public class PlayerTest {
         assertFalse(mockCardGame.validateNumberOfPlayer("_9"));
         assertFalse(mockCardGame.validateNumberOfPlayer("9 "));
         assertTrue(mockCardGame.validateNumberOfPlayer("5"));
-        
+
         System.out.println("Test pass for validate amount of player");
     }
 
