@@ -146,7 +146,7 @@ public class Player implements Runnable {
                 return eachCard;
             }
         }
-        // This will not be called, don't worry
+        
         return null;
     }
     //Getter method

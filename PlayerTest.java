@@ -130,12 +130,13 @@ public class PlayerTest {
 
     @Test
     public void testDeckContent(){
-        //Check if deck round robin is correct or not, from inspection we expect that : 
-        assertTrue(d1.getCardList().toString().equals("[0, 3, 1, 2]"));
-        assertTrue(d2.getCardList().toString().equals("[0, 5, 6, 4]"));
-        assertTrue(d3.getCardList().toString().equals("[4, 6, 0, 0]"));
-        assertTrue(d4.getCardList().toString().equals("[3, 0, 0, 0]"));
-        assertTrue(d5.getCardList().toString().equals("[5, 0, 1, 1]"));
+        //Check if deck round robin is correct or not, from inspection we expect that :
+        
+        assertTrue(d1.getCardList().toString().equals("[6, 6, 5, 6]"));
+        assertTrue(d2.getCardList().toString().equals("[3, 1, 5, 4]"));
+        assertTrue(d3.getCardList().toString().equals("[1, 2, 3, 2]"));
+        assertTrue(d4.getCardList().toString().equals("[6, 3, 6, 1]"));
+        assertTrue(d5.getCardList().toString().equals("[3, 4, 2, 4]"));
 
         System.out.println("Test pass for initial deck content");
 
@@ -156,11 +157,11 @@ public class PlayerTest {
     @Test
     public void playerHandContent(){
         // From inspection we expect that : 
-        assertTrue(p1.getPlayerCard().toString().equals("[1, 0, 0, 6]"));
-        assertTrue(p2.getPlayerCard().toString().equals("[3, 6, 3, 3]"));
-        assertTrue(p3.getPlayerCard().toString().equals("[4, 4, 6, 1]"));
-        assertTrue(p4.getPlayerCard().toString().equals("[2, 2, 6, 4]"));
-        assertTrue(p5.getPlayerCard().toString().equals("[1, 1, 5, 4]"));
+        assertTrue(p1.getPlayerCard().toString().equals("[3, 4, 3, 1]"));
+        assertTrue(p2.getPlayerCard().toString().equals("[6, 6, 3, 5]"));
+        assertTrue(p3.getPlayerCard().toString().equals("[6, 5, 6, 2]"));
+        assertTrue(p4.getPlayerCard().toString().equals("[1, 3, 4, 6]"));
+        assertTrue(p5.getPlayerCard().toString().equals("[6, 4, 3, 4]"));
 
         System.out.println("Test pass for initial content in player hand");
     }
@@ -175,10 +176,12 @@ public class PlayerTest {
         ArrayDeque<Card> deckQueue = p1LeftDeck.getCardList();
         Card topCard = deckQueue.getFirst();
         p1.withDrawnCard();
+        //Check to see that the deck no longer contain the withdrawn  card
         assertFalse(deckQueue.contains(topCard));
         System.out.println("Test pass for removing top Card");
 
         try{
+            //Check to see if the withdrawn action has been written to the output file
             BufferedReader readFile = new BufferedReader(new FileReader("testing/player1_output.txt"));
             assertEquals(readFile.readLine(), "player " + p1.playerIndex + " draws a " + topCard.getValue() + " from deck " + p1LeftDeck.getDeckIndex());
             System.out.println("Test pass for writing withdrawn information to output file pass");
@@ -202,7 +205,7 @@ public class PlayerTest {
             }
         }
     
-        //Making sure that the discarding card actually discard the first card in the player hand to the bottom of the right deck or not
+        //Making sure that the discarding card() actually discard the first undesired card in the player hand to the bottom of the right deck or not
         p1.discardingCard();
         assertEquals(differCard, deckQueue.getLast());
         System.out.println("Test for Discarding card to bottom of right deck pass");

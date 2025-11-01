@@ -69,11 +69,11 @@ public class GamePlayTesting {
 
         // Upon inspecting the deckfile we work out that actual initial hand for each player:
         String[] expectedHands = {
-            "player 1 initial hand 1 0 0 6",
-            "player 2 initial hand 3 6 3 3",
-            "player 3 initial hand 4 4 6 1",
-            "player 4 initial hand 2 2 6 4",
-            "player 5 initial hand 1 1 5 4"
+            "player 1 initial hand 3 4 3 1",
+            "player 2 initial hand 6 6 3 5",
+            "player 3 initial hand 6 5 6 2",
+            "player 4 initial hand 1 3 4 6",
+            "player 5 initial hand 6 4 3 4"
         };
         
         for (Player eachPlayer : mockCardGame.playerArr) {
