@@ -77,6 +77,7 @@ public class PlayerTest {
     @Test
     public void validDateDeckContent(){
         //Each deck have invalid content such as not enough card, invalid card value, and so on
+        System.out.println("Began Testing for Invalid Content of Deck : ");
         assertFalse(mockCardGame.validateFile("testing/invalidDeck.txt", 5));
         assertFalse(mockCardGame.validateFile("testing/invalidDeck2.txt", 5));
         assertFalse(mockCardGame.validateFile("testing/invalidDeck3.txt", 5));
@@ -89,11 +90,14 @@ public class PlayerTest {
 
     @Test
     public void validDatePlayerNumbers(){
+        System.out.println("Began Testing for Invalid Number of Player");
+
         assertFalse(mockCardGame.validateNumberOfPlayer("-6"));
         assertFalse(mockCardGame.validateNumberOfPlayer("9a"));
         assertFalse(mockCardGame.validateNumberOfPlayer("_9"));
         assertFalse(mockCardGame.validateNumberOfPlayer("9 "));
         assertTrue(mockCardGame.validateNumberOfPlayer("5"));
+        
         System.out.println("Test pass for validate amount of player");
     }
 
