@@ -1,2 +1,0 @@
-player 2 discards a 6 to deck 3
-player 2 current hand is 6 3 5

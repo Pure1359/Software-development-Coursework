@@ -178,7 +178,7 @@ public class GamePlayTesting {
     }
 
     @Test
-    //To make sure that thread safe can do this checking the Total Card before game start == Total Card left after game start 
+    //To make sure that the program is thread safe we can do this by checking the Total Card before game start == Total Card left after game start 
     public void noCardLost(){
         ArrayList<Integer> originalCards = new ArrayList<>();
 

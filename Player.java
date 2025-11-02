@@ -40,11 +40,12 @@ public class Player implements Runnable {
                 //lockthis() will call the re-entrant lock of leftdeck to lockInterruptibly() which is interruptible lock
             } catch (InterruptedException e){
                 //When any player win, they will call CardGame.interruptAllThread() 
-                //lockThis() will throw interruptedException, when the thread is in Blocked State and is interrupted via CardGame.InterruptAllThread()
+                //lockThis() will throw interruptedException when the thread is in Blocked State and is interrupted via CardGame.InterruptAllThread()
                 break;
             }
             //Right deck must use try lock, if right deck use lockthis(), deadlock will happen sooner or later.
             //Right deck if use lockthis(), will mean that the left deck will still be locked in the mean time, disrupting the flow of the game
+            //Read more in report of why rightDeck can not use lockThis()
             if (rightDeck.tryLock()) {
                
                 //If leftdeck is empty we must release both left and right deck to avoid dead lock.

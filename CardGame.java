@@ -117,7 +117,7 @@ public class CardGame {
             //Began the game
             startThread();
         } else{
-            //Write the ending message to all the player, no thread is start, the game is already end
+            //Write the ending message to all the player, no thread is start, the game is already ended
             for (Player eachPlayer : playerArr){
                 eachPlayer.writeLastLine();
             }

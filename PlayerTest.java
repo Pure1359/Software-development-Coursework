@@ -104,7 +104,7 @@ public class PlayerTest {
 
     @Test
     public void testDeckAssigning(){
-        //Checking if we follow the convention that player Index i left deck is i - 1 and right deck is i, except for first player, as player player left deck is deck nth
+       //Check to see if round robin deck assigning function really form a ring topology or not
         
         assertEquals(p1.getLeftDeck(), d1);
         assertEquals(p2.getLeftDeck(), d2);

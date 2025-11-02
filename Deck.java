@@ -52,7 +52,7 @@ public class Deck {
     }
 
     public void lockthis() throws InterruptedException{
-        //The thread will never know if someone won the game, if it keep blocked for access to this deck, hence this lock need to be interruptible
+        //The thread will never know if someone won the game when it is blocked for access to this lock, hence this lock need to be interruptible
         deckLock.lockInterruptibly();
         detectConcurrentAccess();
     }
@@ -70,7 +70,7 @@ public class Deck {
     }
 
     private void detectConcurrentAccess(){
-        //IF there are only 1 player , then their left and right deck refer to the same object in heap, hence we will get ConcurrentAcessException (which is not an issues).
+        //IF there are only 1 player , then their left and right deck refer to the same object, hence we will get ConcurrentAccessException (which is not an issues).
         if(CardGame.playerArr.length == 1){
             return;
         }
